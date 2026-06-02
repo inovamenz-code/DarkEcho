@@ -1,0 +1,45 @@
+# Unreal Engine generated folders
+Binaries/
+DerivedDataCache/
+Intermediate/
+Saved/
+.vs/
+.vscode/
+.idea/
+
+# Generated folders inside plugins
+**/Binaries/
+**/Intermediate/
+**/DerivedDataCache/
+**/Saved/
+
+# Visual Studio / Rider / IDE temporary files
+*.suo
+*.user
+*.userosscache
+*.sln.docstates
+*.VC.db
+*.VC.VC.opendb
+*.opensdf
+*.sdf
+*.ipch
+*.pdb
+*.ilk
+*.obj
+*.log
+
+# Build outputs
+*.dll
+*.exe
+*.app
+*.lib
+*.exp
+
+# OS temporary files
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Local backups / generated reports
+Backup/
+UpgradeLog.htm
