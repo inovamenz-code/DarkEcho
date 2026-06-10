@@ -9,6 +9,7 @@
 class UMaterialParameterCollection;
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FEchoWaveTriggeredSignature, FVector, Origin);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FEchoWaveSlotTriggeredSignature, FVector, Origin, int32, SlotIndex);
 
 UCLASS(ClassGroup = (Echo), meta = (BlueprintSpawnableComponent))
 class BALLDARKECHO_API UEchoWaveEmitterComponent : public UActorComponent
@@ -23,6 +24,15 @@ public:
 
 	UFUNCTION(BlueprintCallable, Category = "Echo")
 	void TriggerEchoWaveAtLocation(FVector Origin);
+
+	UFUNCTION(BlueprintCallable, Category = "Echo")
+	void TriggerEchoWaveAtLocationWithSettings(
+		FVector Origin,
+		float OverrideWaveSpeed,
+		float OverrideWaveWidth,
+		float OverrideWaveIntensity,
+		float OverrideWaveDuration,
+		float OverrideMaxRadius);
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Echo")
 	TObjectPtr<UMaterialParameterCollection> MaterialParameterCollection = nullptr;
@@ -42,8 +52,26 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Echo", meta = (ClampMin = "0.01"))
 	float WaveDuration = 2.0f;
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Echo", meta = (ClampMin = "1.0"))
+	float WaveMaxRadius = 1200.0f;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Echo", meta = (ClampMin = "1", ClampMax = "16"))
+	int32 MaxSimultaneousWaves = 4;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Echo")
+	bool bUseNumberedParameterSlots = true;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Echo|Debug")
+	bool bShowWaveDebugMessages = false;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Echo|Debug", meta = (ClampMin = "0.1"))
+	float DebugMessageDuration = 1.0f;
+
 	UPROPERTY(BlueprintAssignable, Category = "Echo")
 	FEchoWaveTriggeredSignature OnEchoWaveTriggered;
+
+	UPROPERTY(BlueprintAssignable, Category = "Echo")
+	FEchoWaveSlotTriggeredSignature OnEchoWaveSlotTriggered;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Echo|Parameter Names")
 	FName EchoOriginParameterName = TEXT("EchoOrigin0");
@@ -62,4 +90,23 @@ public:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Echo|Parameter Names")
 	FName EchoDurationParameterName = TEXT("EchoDuration0");
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Echo|Parameter Names")
+	FName EchoMaxRadiusParameterName = TEXT("EchoMaxRadius0");
+
+protected:
+	virtual void BeginPlay() override;
+
+private:
+	void TriggerEchoWaveInternal(
+		FVector Origin,
+		float InWaveSpeed,
+		float InWaveWidth,
+		float InWaveIntensity,
+		float InWaveDuration,
+		float InWaveMaxRadius);
+
+	FName BuildSlotParameterName(FName TemplateName, int32 SlotIndex) const;
+
+	int32 NextWaveSlotIndex = 0;
 };

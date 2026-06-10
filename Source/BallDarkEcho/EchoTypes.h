@@ -26,3 +26,11 @@ enum class EEchoCollectibleType : uint8
 	AcousticFragment UMETA(DisplayName = "Acoustic Fragment"),
 	EnergyPickup UMETA(DisplayName = "Energy Pickup")
 };
+
+UENUM(BlueprintType)
+enum class EEchoMatchOutcome : uint8
+{
+	None UMETA(DisplayName = "None"),
+	Victory UMETA(DisplayName = "Victory"),
+	Defeat UMETA(DisplayName = "Defeat")
+};

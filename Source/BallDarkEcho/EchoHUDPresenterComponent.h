@@ -8,6 +8,11 @@
 #include "EchoHUDPresenterComponent.generated.h"
 
 class UEchoGameplayComponent;
+class UEchoCombatComponent;
+class AEchoDeathmatchGameState;
+class AEchoPlayerState;
+class UEchoExplorationMapComponent;
+class UEchoExplorationMapWidget;
 class UEchoHUDWidget;
 
 UCLASS(ClassGroup = (Echo), meta = (BlueprintSpawnableComponent))
@@ -21,11 +26,35 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "Echo|HUD")
 	void CreateHUD();
 
+	UFUNCTION(BlueprintCallable, Category = "Echo|HUD")
+	void SetLargeMapVisible(bool bVisible);
+
+	UFUNCTION(BlueprintCallable, Category = "Echo|HUD")
+	void ToggleLargeMap();
+
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Echo|HUD")
 	TSubclassOf<UEchoHUDWidget> HUDWidgetClass;
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Echo|HUD|Map")
+	TSubclassOf<UEchoExplorationMapWidget> LargeMapWidgetClass;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Echo|HUD|Map")
+	TSubclassOf<UEchoExplorationMapWidget> MiniMapWidgetClass;
+
 	UPROPERTY(BlueprintReadOnly, Category = "Echo|HUD")
 	TObjectPtr<UEchoHUDWidget> HUDWidget = nullptr;
+
+	UPROPERTY(BlueprintReadOnly, Category = "Echo|HUD|Map")
+	TObjectPtr<UEchoExplorationMapWidget> LargeMapWidget = nullptr;
+
+	UPROPERTY(BlueprintReadOnly, Category = "Echo|HUD|Map")
+	TObjectPtr<UEchoExplorationMapWidget> MiniMapWidget = nullptr;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Echo|HUD|Map")
+	bool bShowMiniMap = true;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Echo|HUD|Map")
+	bool bBindTabToLargeMap = true;
 
 protected:
 	virtual void BeginPlay() override;
@@ -46,5 +75,35 @@ private:
 	UFUNCTION()
 	void HandleGameplayFailed(FName Reason);
 
+	UFUNCTION()
+	void HandleExplorationMapChanged();
+
+	UFUNCTION()
+	void HandleCombatHealthChanged(float CurrentHealth, float MaxHealth);
+
+	UFUNCTION()
+	void HandleDeathStateChanged(bool bIsDead);
+
+	UFUNCTION()
+	void HandleScoreChanged(int32 Kills, int32 Deaths);
+
+	UFUNCTION()
+	void HandleMatchWinner(AEchoPlayerState* Winner, int32 KillTarget);
+
+	void CreateLargeMapWidget();
+	void CreateMiniMapWidget();
+	void BindLargeMapInput();
+	void PushExplorationMapDataToWidgets();
+	void PushDeathmatchScoreToHUD();
+	void ShowLargeMapPressed();
+	void ShowLargeMapReleased();
 	void BindGameplayComponent(UEchoGameplayComponent* GameplayComponent);
+	void BindCombatComponent(UEchoCombatComponent* CombatComponent);
+	void BindPlayerState(AEchoPlayerState* PlayerState);
+	void BindGameState(AEchoDeathmatchGameState* GameState);
+	void BindExplorationMapComponent(UEchoExplorationMapComponent* ExplorationMapComponent);
+
+	TWeakObjectPtr<UEchoExplorationMapComponent> BoundExplorationMapComponent;
+	TWeakObjectPtr<AEchoPlayerState> BoundPlayerState;
+	TWeakObjectPtr<AEchoDeathmatchGameState> BoundGameState;
 };

@@ -122,6 +122,33 @@ def spawn_blueprint(label, cls, location, rotation=(0.0, 0.0, 0.0)):
     return actor
 
 
+def set_collectible_visible_for_level1(actor):
+    if actor is None:
+        return
+
+    actor.set_actor_scale3d(unreal.Vector(1.5, 1.5, 1.5))
+    actor.set_actor_hidden_in_game(False)
+
+    reveal_target = actor.get_component_by_class(unreal.EchoRevealTargetComponent)
+    if reveal_target is not None:
+        set_actor_property_if_present(reveal_target, "b_hide_owner_until_revealed", False)
+        set_actor_property_if_present(reveal_target, "hide_owner_until_revealed", False)
+        affinity_enum = getattr(unreal, "EEchoFrequencyAffinity", None)
+        if affinity_enum is not None:
+            both_affinity = getattr(affinity_enum, "BOTH", None)
+            if both_affinity is None:
+                both_affinity = getattr(affinity_enum, "Both", None)
+            if both_affinity is not None:
+                set_actor_property_if_present(reveal_target, "frequency_affinity", both_affinity)
+        else:
+            log("Skipped FrequencyAffinity override: EEchoFrequencyAffinity was not available in Python.")
+
+    mesh_component = actor.get_component_by_class(unreal.StaticMeshComponent)
+    if mesh_component is not None:
+        mesh_component.set_hidden_in_game(False)
+        mesh_component.set_visibility(True, True)
+
+
 def ensure_player_start():
     start = unreal.EditorLevelLibrary.spawn_actor_from_class(
         unreal.PlayerStart,
@@ -137,7 +164,8 @@ def set_actor_property_if_present(actor, property_name, value):
         actor.set_editor_property(property_name, value)
         return True
     except Exception as exc:
-        log(f"Skipped property {property_name} on {actor.get_actor_label()}: {exc}")
+        object_name = actor.get_name() if hasattr(actor, "get_name") else str(actor)
+        log(f"Skipped property {property_name} on {object_name}: {exc}")
         return False
 
 
@@ -166,19 +194,19 @@ def build_graybox(mesh, material):
 
 def build_pickups_and_exit(fragment_cls, energy_cls, exit_cls):
     fragments = [
-        ("Fragment_01_Tutorial", (-600.0, -650.0, 100.0)),
-        ("Fragment_02_Branch", (450.0, 650.0, 100.0)),
-        ("Fragment_03_ExitKey", (1450.0, -350.0, 100.0)),
+        ("Fragment_01_Tutorial", (-600.0, -650.0, 160.0)),
+        ("Fragment_02_Branch", (450.0, 650.0, 160.0)),
+        ("Fragment_03_ExitKey", (1450.0, -350.0, 160.0)),
     ]
     for label, location in fragments:
-        spawn_blueprint(label, fragment_cls, location)
+        set_collectible_visible_for_level1(spawn_blueprint(label, fragment_cls, location))
 
     energies = [
-        ("Energy_01_Route", (100.0, -850.0, 100.0)),
-        ("Energy_02_NorthReward", (1050.0, 650.0, 100.0)),
+        ("Energy_01_Route", (100.0, -850.0, 160.0)),
+        ("Energy_02_NorthReward", (1050.0, 650.0, 160.0)),
     ]
     for label, location in energies:
-        spawn_blueprint(label, energy_cls, location)
+        set_collectible_visible_for_level1(spawn_blueprint(label, energy_cls, location))
 
     exit_actor = spawn_blueprint("Exit", exit_cls, (1850.0, 900.0, 120.0))
     set_actor_property_if_present(exit_actor, "required_fragments_override", 3)

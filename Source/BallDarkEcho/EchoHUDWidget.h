@@ -27,4 +27,19 @@ public:
 
 	UFUNCTION(BlueprintImplementableEvent, Category = "Echo|HUD")
 	void ShowGameplayFailure(FName Reason);
+
+	UFUNCTION(BlueprintImplementableEvent, Category = "Echo|HUD")
+	void UpdateExplorationMap(const TArray<FIntPoint>& ExploredCells, FIntPoint GridSize, float ExploredRatio);
+
+	UFUNCTION(BlueprintImplementableEvent, Category = "Echo|HUD|Combat")
+	void UpdateCombatHealth(float CurrentHealth, float MaxHealth);
+
+	UFUNCTION(BlueprintImplementableEvent, Category = "Echo|HUD|Combat")
+	void UpdateDeathState(bool bIsDead);
+
+	UFUNCTION(BlueprintImplementableEvent, Category = "Echo|HUD|Deathmatch")
+	void UpdateDeathmatchScore(int32 Kills, int32 Deaths, int32 KillTarget);
+
+	UFUNCTION(BlueprintImplementableEvent, Category = "Echo|HUD|Deathmatch")
+	void ShowDeathmatchResult(EEchoMatchOutcome Outcome, const FText& WinnerName, int32 KillTarget);
 };
