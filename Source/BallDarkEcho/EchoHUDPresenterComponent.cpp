@@ -6,9 +6,11 @@
 #include "EchoExplorationMapWidget.h"
 #include "EchoCombatComponent.h"
 #include "EchoDeathmatchGameState.h"
+#include "EchoCrosshairWidget.h"
 #include "EchoGameplayComponent.h"
 #include "EchoHUDWidget.h"
 #include "EchoPlayerState.h"
+#include "EchoWeaponComponent.h"
 #include "Components/InputComponent.h"
 #include "GameFramework/Actor.h"
 #include "GameFramework/Pawn.h"
@@ -34,6 +36,7 @@ void UEchoHUDPresenterComponent::BeginPlay()
 	}
 
 	CreateHUD();
+	CreateCrosshairWidget();
 	CreateMiniMapWidget();
 	CreateLargeMapWidget();
 	BindLargeMapInput();
@@ -42,6 +45,7 @@ void UEchoHUDPresenterComponent::BeginPlay()
 	{
 		BindGameplayComponent(Owner->FindComponentByClass<UEchoGameplayComponent>());
 		BindCombatComponent(Owner->FindComponentByClass<UEchoCombatComponent>());
+		BindWeaponComponent(Owner->FindComponentByClass<UEchoWeaponComponent>());
 		BindExplorationMapComponent(Owner->FindComponentByClass<UEchoExplorationMapComponent>());
 
 		if (const APawn* OwnerPawn = Cast<APawn>(Owner))
@@ -55,7 +59,7 @@ void UEchoHUDPresenterComponent::BeginPlay()
 
 void UEchoHUDPresenterComponent::CreateHUD()
 {
-	if (HUDWidget || !HUDWidgetClass)
+	if (HUDWidget)
 	{
 		return;
 	}
@@ -66,10 +70,48 @@ void UEchoHUDPresenterComponent::CreateHUD()
 		return;
 	}
 
-	HUDWidget = CreateWidget<UEchoHUDWidget>(PlayerController, HUDWidgetClass);
+	TSubclassOf<UEchoHUDWidget> WidgetClass = HUDWidgetClass;
+	if (!WidgetClass)
+	{
+		WidgetClass = LoadClass<UEchoHUDWidget>(nullptr, TEXT("/Game/UI/WBP_EchoHUD.WBP_EchoHUD_C"));
+	}
+
+	if (!WidgetClass)
+	{
+		return;
+	}
+
+	HUDWidget = CreateWidget<UEchoHUDWidget>(PlayerController, WidgetClass);
 	if (HUDWidget)
 	{
 		HUDWidget->AddToViewport();
+	}
+}
+
+void UEchoHUDPresenterComponent::CreateCrosshairWidget()
+{
+	if (CrosshairWidget || !bShowCrosshair)
+	{
+		return;
+	}
+
+	APlayerController* PlayerController = UGameplayStatics::GetPlayerController(this, 0);
+	if (!PlayerController)
+	{
+		return;
+	}
+
+	TSubclassOf<UEchoCrosshairWidget> WidgetClass = CrosshairWidgetClass;
+	if (!WidgetClass)
+	{
+		WidgetClass = UEchoCrosshairWidget::StaticClass();
+	}
+
+	CrosshairWidget = CreateWidget<UEchoCrosshairWidget>(PlayerController, WidgetClass);
+	if (CrosshairWidget)
+	{
+		CrosshairWidget->AddToViewport(30);
+		CrosshairWidget->SetVisibility(ESlateVisibility::HitTestInvisible);
 	}
 }
 
@@ -236,6 +278,17 @@ void UEchoHUDPresenterComponent::BindCombatComponent(UEchoCombatComponent* Comba
 	HandleDeathStateChanged(CombatComponent->bDead);
 }
 
+void UEchoHUDPresenterComponent::BindWeaponComponent(UEchoWeaponComponent* WeaponComponent)
+{
+	if (!WeaponComponent)
+	{
+		return;
+	}
+
+	WeaponComponent->OnWeaponModeChanged.AddDynamic(this, &UEchoHUDPresenterComponent::HandleWeaponModeChanged);
+	HandleWeaponModeChanged(WeaponComponent->CurrentWeaponMode);
+}
+
 void UEchoHUDPresenterComponent::BindPlayerState(AEchoPlayerState* PlayerState)
 {
 	if (!PlayerState)
@@ -390,4 +443,12 @@ void UEchoHUDPresenterComponent::HandleMatchWinner(AEchoPlayerState* Winner, int
 	const EEchoMatchOutcome Outcome = Winner && Winner == LocalPlayerState ? EEchoMatchOutcome::Victory : EEchoMatchOutcome::Defeat;
 	const FText WinnerName = Winner ? FText::FromString(Winner->GetPlayerName()) : FText::GetEmpty();
 	HUDWidget->ShowDeathmatchResult(Outcome, WinnerName, KillTarget);
+}
+
+void UEchoHUDPresenterComponent::HandleWeaponModeChanged(EEchoWeaponMode WeaponMode)
+{
+	if (HUDWidget)
+	{
+		HUDWidget->UpdateWeaponMode(WeaponMode);
+	}
 }
