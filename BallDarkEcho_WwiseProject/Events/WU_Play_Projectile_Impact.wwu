@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<WwiseDocument Type="WorkUnit" ID="{1B5370C9-90FB-488A-9390-78B51234F784}" SchemaVersion="133" RootDocumentID="{FEDA695C-EB34-4EE0-939F-3E2BBE2DE5C2}" ParentDocumentID="{FEDA695C-EB34-4EE0-939F-3E2BBE2DE5C2}">
+	<Events>
+		<WorkUnit Name="WU_Play_Projectile_Impact" ID="{1B5370C9-90FB-488A-9390-78B51234F784}" OwnerID="{FEDA695C-EB34-4EE0-939F-3E2BBE2DE5C2}" PersistMode="Nested"/>
+	</Events>
+</WwiseDocument>

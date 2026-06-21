@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<WwiseDocument Type="WorkUnit" ID="{5D940802-4974-4C37-897D-02392F32ACB9}" SchemaVersion="133">
+	<Busses>
+		<WorkUnit Name="Default Work Unit" ID="{5D940802-4974-4C37-897D-02392F32ACB9}" PersistMode="Standalone">
+			<ChildrenList>
+				<Bus Name="Main Audio Bus" ID="{1514A4D8-1DA6-412A-A17E-75CA0C2149F3}">
+					<ReferenceList>
+						<Reference Name="AudioDevice" PluginName="System" CompanyID="0" PluginID="174" PluginType="7">
+							<ObjectRef Name="System" ID="{5BD70268-3434-45A2-BF10-D02AABB93ADD}" WorkUnitID="{8950F4D6-BCBE-4DF0-8EC3-3E9860A52DE4}"/>
+						</Reference>
+					</ReferenceList>
+					<ChildrenList>
+						<Bus Name="Gameplay_SFX" ID="{49376476-49F9-4654-BA13-2E4917956DD1}"/>
+						<Bus Name="Player_Feedback" ID="{C9805F5A-E00C-4476-B1D4-330EC016895B}"/>
+						<Bus Name="Enemy_Cues" ID="{1208A4B2-AE24-438A-9F85-A6A01AD74A98}"/>
+						<Bus Name="UI" ID="{84CF0D28-4AC1-42FC-9DE2-F3AC65BC2C40}"/>
+						<Bus Name="Ambience" ID="{E8B8667C-D6E1-4018-8651-9470F83583A8}"/>
+						<Bus Name="Reverb_Reflection" ID="{DA14E5E2-D327-4725-B6E4-A8BB277CB24D}"/>
+					</ChildrenList>
+				</Bus>
+			</ChildrenList>
+		</WorkUnit>
+	</Busses>
+</WwiseDocument>

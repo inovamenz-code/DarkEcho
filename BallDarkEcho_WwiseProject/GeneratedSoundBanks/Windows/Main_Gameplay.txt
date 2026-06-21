@@ -1,0 +1,13 @@
+Event	ID	Name			Wwise Object Path	Notes
+	170202313	Play_Weapon_Standard_Fire			\Default Work Unit\Play_Weapon_Standard_Fire	
+	620949748	Play_Weapon_Rapid_Fire			\Default Work Unit\Play_Weapon_Rapid_Fire	
+	1317724945	Play_Weapon_Snipe_Fire			\Default Work Unit\Play_Weapon_Snipe_Fire	
+	1698210093	Play_Move_Normal			\Default Work Unit\Play_Move_Normal	
+	1981685848	Play_Move_Sprint			\Default Work Unit\Play_Move_Sprint	
+	3824681503	Play_Move_Silent			\Default Work Unit\Play_Move_Silent	
+
+In Memory Audio	ID	Name	Audio source file		Wwise Object Path	Notes	Data Size
+	237410838	Snipe	.cache\3A\{3A67986A-7A0E-17EE-D2CD-8925DD91DE58}.wem		\Containers\Default Work Unit\Snipe		197596
+	825503811	SFX_Echo_Test_Beep	.cache\27\{27F02B6F-224D-8D67-2372-E3E67D446710}.wem		\Containers\Default Work Unit\SFX_Echo_Test_Beep		76888
+	1045975195	SFX_Move_BallRoll	.cache\60\{600BD48D-6C0D-EF3B-E684-FFAB1667B483}.wem		\Containers\Default Work Unit\SFX_Move_BallRoll		394360
+

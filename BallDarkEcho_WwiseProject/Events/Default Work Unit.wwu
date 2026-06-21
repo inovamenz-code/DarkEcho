@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="utf-8"?>
+<WwiseDocument Type="WorkUnit" ID="{FEDA695C-EB34-4EE0-939F-3E2BBE2DE5C2}" SchemaVersion="133">
+	<Events>
+		<WorkUnit Name="Default Work Unit" ID="{FEDA695C-EB34-4EE0-939F-3E2BBE2DE5C2}" PersistMode="Standalone">
+			<ChildrenList>
+				<Event Name="Play_SFX_Echo_Test_Beep" ID="{7D31BFA5-BD22-4A55-BEDC-1EC0C7720CDA}">
+					<ChildrenList>
+						<Action Name="" ID="{C0086A2F-1E7D-4BAC-8BFE-F8ECE0F22AD7}" ShortID="497470159">
+							<ReferenceList>
+								<Reference Name="Target">
+									<ObjectRef Name="SFX_Echo_Test_Beep" ID="{0195FC13-0657-4B0A-AB02-161BE7761B97}" WorkUnitID="{061430D0-7E9F-4CD7-A644-FDB73EB89B63}"/>
+								</Reference>
+							</ReferenceList>
+						</Action>
+					</ChildrenList>
+				</Event>
+				<WorkUnit Name="WU_Play_Move_Normal" ID="{39FEA447-A4C7-4F72-88FE-E910098506C2}" PersistMode="Reference"/>
+				<WorkUnit Name="WU_Play_Move_Sprint" ID="{3534AD8B-889F-4D8E-A062-CFD90CFD126B}" PersistMode="Reference"/>
+				<WorkUnit Name="WU_Play_Move_Silent" ID="{4F936420-2923-4EF8-BF73-46D4258829A6}" PersistMode="Reference"/>
+				<WorkUnit Name="WU_Play_Weapon_Standard_Fire" ID="{EF8865EB-C86E-4E44-A222-6A83FF8E773D}" PersistMode="Reference"/>
+				<WorkUnit Name="WU_Play_Weapon_Rapid_Fire" ID="{8F25F050-38F1-4624-91A0-25D4D3A061B5}" PersistMode="Reference"/>
+				<WorkUnit Name="WU_Play_Weapon_Snipe_Fire" ID="{213EFB42-7525-4190-924E-E4236DD43955}" PersistMode="Reference"/>
+				<WorkUnit Name="WU_Play_Projectile_Impact" ID="{1B5370C9-90FB-488A-9390-78B51234F784}" PersistMode="Reference"/>
+				<WorkUnit Name="WU_Play_Scan_Quick" ID="{1ED3C5DD-4DD6-45BE-A621-1B9E19A5D9D1}" PersistMode="Reference"/>
+				<WorkUnit Name="WU_Play_Scan_Charged" ID="{0E1EA814-2058-4653-B9F7-1C82E44E6A22}" PersistMode="Reference"/>
+				<Event Name="Play_Move_Normal" ID="{53802EA6-46A2-46CA-B849-CC3A43128545}">
+					<ChildrenList>
+						<Action Name="" ID="{29264C93-D1DC-4A96-974A-9CCFA1318CCD}" ShortID="453148857">
+							<ReferenceList>
+								<Reference Name="Target">
+									<ObjectRef Name="SFX_Echo_Test_Beep" ID="{0195FC13-0657-4B0A-AB02-161BE7761B97}" WorkUnitID="{061430D0-7E9F-4CD7-A644-FDB73EB89B63}"/>
+								</Reference>
+							</ReferenceList>
+						</Action>
+					</ChildrenList>
+				</Event>
+				<Event Name="Play_Move_Sprint" ID="{8BAB1180-C553-4403-8B6F-4AB31A24A390}">
+					<ChildrenList>
+						<Action Name="" ID="{E35C1985-40F9-4974-96FB-AA9AE62944DF}" ShortID="168540394">
+							<ReferenceList>
+								<Reference Name="Target">
+									<ObjectRef Name="SFX_Move_BallRoll" ID="{10C00A1F-4DEA-4F40-A5C3-50A796ADA5CB}" WorkUnitID="{061430D0-7E9F-4CD7-A644-FDB73EB89B63}"/>
+								</Reference>
+							</ReferenceList>
+						</Action>
+					</ChildrenList>
+				</Event>
+				<Event Name="Play_Move_Silent" ID="{78B906BC-63AD-4C96-9555-337485D3C99A}">
+					<ChildrenList>
+						<Action Name="" ID="{8D3663D0-9E27-41F6-B53D-5A654D781EAB}" ShortID="400557306">
+							<ReferenceList>
+								<Reference Name="Target">
+									<ObjectRef Name="SFX_Move_BallRoll" ID="{10C00A1F-4DEA-4F40-A5C3-50A796ADA5CB}" WorkUnitID="{061430D0-7E9F-4CD7-A644-FDB73EB89B63}"/>
+								</Reference>
+							</ReferenceList>
+						</Action>
+					</ChildrenList>
+				</Event>
+				<Event Name="Play_Weapon_Standard_Fire" ID="{F3EF955E-10C1-4BE9-B887-12103B61A347}">
+					<ChildrenList>
+						<Action Name="" ID="{F89B2DEF-660E-46AD-8188-F2EF1D83D812}" ShortID="951099072">
+							<ReferenceList>
+								<Reference Name="Target">
+									<ObjectRef Name="Snipe" ID="{14655564-CC41-4E2A-86A8-353A3C28CE37}" WorkUnitID="{061430D0-7E9F-4CD7-A644-FDB73EB89B63}"/>
+								</Reference>
+							</ReferenceList>
+						</Action>
+					</ChildrenList>
+				</Event>
+				<Event Name="Play_Weapon_Rapid_Fire" ID="{446A50CF-3CA5-4908-A974-501B604A4E16}">
+					<ChildrenList>
+						<Action Name="" ID="{773975F3-4C69-45C9-8CFF-50638EE453CE}" ShortID="413922711">
+							<ReferenceList>
+								<Reference Name="Target">
+									<ObjectRef Name="Snipe" ID="{14655564-CC41-4E2A-86A8-353A3C28CE37}" WorkUnitID="{061430D0-7E9F-4CD7-A644-FDB73EB89B63}"/>
+								</Reference>
+							</ReferenceList>
+						</Action>
+					</ChildrenList>
+				</Event>
+				<Event Name="Play_Weapon_Snipe_Fire" ID="{5CB77170-E19A-44CF-9CE9-4CEC659D1072}"/>
+			</ChildrenList>
+		</WorkUnit>
+	</Events>
+</WwiseDocument>

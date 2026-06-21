@@ -2,8 +2,11 @@
 
 #include "EchoWeaponComponent.h"
 
+#include "EchoAudioEventComponent.h"
 #include "EchoCombatComponent.h"
 #include "EchoSoundProjectileActor.h"
+#include "EchoVisualWaveActor.h"
+#include "EchoWaveEmitterComponent.h"
 #include "GameFramework/Controller.h"
 #include "GameFramework/Pawn.h"
 #include "Net/UnrealNetwork.h"
@@ -14,6 +17,7 @@ UEchoWeaponComponent::UEchoWeaponComponent()
 	SetIsReplicatedByDefault(true);
 
 	ProjectileClass = AEchoSoundProjectileActor::StaticClass();
+	FireVisualWaveClass = AEchoVisualWaveActor::StaticClass();
 
 	StandardTuning.Damage = 35.0f;
 	StandardTuning.ProjectileSpeed = 1800.0f;
@@ -38,6 +42,14 @@ UEchoWeaponComponent::UEchoWeaponComponent()
 	LongRangeSnipeTuning.FullDamageRange = 3600.0f;
 	LongRangeSnipeTuning.MinDamageMultiplier = 0.8f;
 	LongRangeSnipeTuning.ExposureRadius = 1700.0f;
+
+	ResonanceBeamTuning.Damage = 15.0f;
+	ResonanceBeamTuning.ProjectileSpeed = 5200.0f;
+	ResonanceBeamTuning.MaxRange = 4200.0f;
+	ResonanceBeamTuning.Cooldown = 0.5f;
+	ResonanceBeamTuning.FullDamageRange = 4200.0f;
+	ResonanceBeamTuning.MinDamageMultiplier = 1.0f;
+	ResonanceBeamTuning.ExposureRadius = 2200.0f;
 }
 
 void UEchoWeaponComponent::BeginPlay()
@@ -50,6 +62,7 @@ void UEchoWeaponComponent::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>&
 {
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
 	DOREPLIFETIME(UEchoWeaponComponent, CurrentWeaponMode);
+	DOREPLIFETIME(UEchoWeaponComponent, bResonanceBeamActive);
 }
 
 void UEchoWeaponComponent::SetWeaponMode(EEchoWeaponMode NewWeaponMode)
@@ -109,6 +122,11 @@ void UEchoWeaponComponent::ServerFireCurrentWeapon_Implementation(FVector_NetQua
 
 FEchoWeaponTuning UEchoWeaponComponent::GetCurrentTuning() const
 {
+	if (bResonanceBeamActive)
+	{
+		return ResonanceBeamTuning;
+	}
+
 	switch (CurrentWeaponMode)
 	{
 	case EEchoWeaponMode::RapidCloseRange:
@@ -118,6 +136,35 @@ FEchoWeaponTuning UEchoWeaponComponent::GetCurrentTuning() const
 	case EEchoWeaponMode::Standard:
 	default:
 		return StandardTuning;
+	}
+}
+
+FVector UEchoWeaponComponent::GetCurrentMuzzleLocation() const
+{
+	FVector ViewOrigin = FVector::ZeroVector;
+	FVector ViewDirection = FVector::ForwardVector;
+	GetViewFireOriginAndDirection(ViewOrigin, ViewDirection);
+	return GetMuzzleLocation(ViewDirection);
+}
+
+void UEchoWeaponComponent::ActivateResonanceBeam(float Duration)
+{
+	AActor* Owner = GetOwner();
+	if (!Owner || !Owner->HasAuthority())
+	{
+		return;
+	}
+
+	bResonanceBeamActive = true;
+	if (UWorld* World = GetWorld())
+	{
+		World->GetTimerManager().ClearTimer(ResonanceBeamTimerHandle);
+		World->GetTimerManager().SetTimer(
+			ResonanceBeamTimerHandle,
+			this,
+			&UEchoWeaponComponent::ClearResonanceBeam,
+			FMath::Max(0.01f, Duration),
+			false);
 	}
 }
 
@@ -196,8 +243,10 @@ void UEchoWeaponComponent::FireOnServer(FVector ViewOrigin, FVector ViewDirectio
 		InstigatorController = OwnerPawn->GetController();
 	}
 
-	Projectile->InitializeProjectile(InstigatorController, Owner, ProjectileDirection, GetCurrentTuning(), CurrentWeaponMode);
+	const FEchoWeaponTuning CurrentTuning = GetCurrentTuning();
+	Projectile->InitializeProjectile(InstigatorController, Owner, ProjectileDirection, CurrentTuning, CurrentWeaponMode, bResonanceBeamActive);
 	OnWeaponFired.Broadcast(CurrentWeaponMode, MuzzleLocation);
+	MulticastTriggerFireExposureWave(MuzzleLocation, CurrentTuning, CurrentWeaponMode);
 }
 
 void UEchoWeaponComponent::GetViewFireOriginAndDirection(FVector& OutOrigin, FVector& OutDirection) const
@@ -264,4 +313,93 @@ FVector UEchoWeaponComponent::GetAimTargetPoint(FVector ViewOrigin, FVector View
 	}
 
 	return TraceEnd;
+}
+
+float UEchoWeaponComponent::GetFireExposureIntensity(EEchoWeaponMode WeaponMode) const
+{
+	switch (WeaponMode)
+	{
+	case EEchoWeaponMode::RapidCloseRange:
+		return RapidFireExposureIntensity;
+	case EEchoWeaponMode::LongRangeSnipe:
+		return SnipeFireExposureIntensity;
+	case EEchoWeaponMode::Standard:
+	default:
+		return StandardFireExposureIntensity;
+	}
+}
+
+void UEchoWeaponComponent::TriggerLocalFireExposureWave(FVector Origin, FEchoWeaponTuning Tuning, EEchoWeaponMode WeaponMode)
+{
+	if (AActor* Owner = GetOwner())
+	{
+		if (UEchoAudioEventComponent* AudioEvents = Owner->FindComponentByClass<UEchoAudioEventComponent>())
+		{
+			EEchoSoundEventType FireSoundType = EEchoSoundEventType::WeaponStandardFire;
+			float FireLoudness = 0.7f;
+
+			switch (WeaponMode)
+			{
+			case EEchoWeaponMode::RapidCloseRange:
+				FireSoundType = EEchoSoundEventType::WeaponRapidFire;
+				FireLoudness = 0.55f;
+				break;
+			case EEchoWeaponMode::LongRangeSnipe:
+				FireSoundType = EEchoSoundEventType::WeaponSnipeFire;
+				FireLoudness = 1.0f;
+				break;
+			case EEchoWeaponMode::Standard:
+			default:
+				break;
+			}
+
+			AudioEvents->PostEchoSoundEvent(FireSoundType, Origin, FireLoudness);
+		}
+	}
+
+	// Fire exposure currently uses the red local visual wave only.
+	// The shared blue material wave is reserved for movement, scans, and impacts.
+	SpawnFireVisualWave(Origin, Tuning);
+}
+
+void UEchoWeaponComponent::SpawnFireVisualWave(FVector Origin, FEchoWeaponTuning Tuning)
+{
+	if (!bSpawnFireVisualWave || !FireVisualWaveClass)
+	{
+		return;
+	}
+
+	UWorld* World = GetWorld();
+	if (!World)
+	{
+		return;
+	}
+
+	FActorSpawnParameters SpawnParameters;
+	SpawnParameters.Owner = GetOwner();
+	SpawnParameters.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
+
+	if (AEchoVisualWaveActor* VisualWave = World->SpawnActor<AEchoVisualWaveActor>(
+		FireVisualWaveClass,
+		Origin,
+		FRotator::ZeroRotator,
+		SpawnParameters))
+	{
+		VisualWave->InitializeVisualWave(
+			FireVisualWaveColor,
+			FireExposureWaveSpeed,
+			Tuning.ExposureRadius,
+			FireExposureWaveDuration,
+			FireVisualWaveThickness);
+	}
+}
+
+void UEchoWeaponComponent::MulticastTriggerFireExposureWave_Implementation(FVector_NetQuantize Origin, FEchoWeaponTuning Tuning, EEchoWeaponMode WeaponMode)
+{
+	TriggerLocalFireExposureWave(Origin, Tuning, WeaponMode);
+}
+
+void UEchoWeaponComponent::ClearResonanceBeam()
+{
+	bResonanceBeamActive = false;
 }

@@ -1,0 +1,36 @@
+{
+ "ProjectInfo": {
+  "Project": {
+   "Name": "BallDarkEcho_WwiseProject",
+   "GUID": "{57925AA3-BB96-4D32-A221-1A63B61BA6B7}",
+   "Generator": "2025.1.8.9170"
+  },
+  "CacheRoot": "../.cache",
+  "Platforms": [
+   {
+    "Name": "Mac",
+    "GUID": "{78957E28-119F-4D90-ABA8-2A7FEEF5030D}",
+    "BasePlatform": "Mac",
+    "BasePlatformGUID": "{9C6217D5-DD11-4795-87C1-6CE02853C540}",
+    "Path": "Mac"
+   },
+   {
+    "Name": "Windows",
+    "GUID": "{F2054E28-0E1C-4DF6-99BF-DD3F4A7A05EE}",
+    "BasePlatform": "Windows",
+    "BasePlatformGUID": "{6E0CB257-C6C8-4C5C-8366-2740DFC441EB}",
+    "Path": "Windows"
+   }
+  ],
+  "Languages": [
+   {
+    "Name": "English(US)",
+    "Id": "684519430",
+    "GUID": "{68D68009-89B7-4050-966A-57F5E495D390}",
+    "Default": "true",
+    "UseAsStandIn": "true"
+   }
+  ],
+  "FileHash": "{9F7121A0-5E8C-B8B8-78F4-8792AB36608D}"
+ }
+}

@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<WwiseDocument Type="WorkUnit" ID="{4F936420-2923-4EF8-BF73-46D4258829A6}" SchemaVersion="133" RootDocumentID="{FEDA695C-EB34-4EE0-939F-3E2BBE2DE5C2}" ParentDocumentID="{FEDA695C-EB34-4EE0-939F-3E2BBE2DE5C2}">
+	<Events>
+		<WorkUnit Name="WU_Play_Move_Silent" ID="{4F936420-2923-4EF8-BF73-46D4258829A6}" OwnerID="{FEDA695C-EB34-4EE0-939F-3E2BBE2DE5C2}" PersistMode="Nested"/>
+	</Events>
+</WwiseDocument>

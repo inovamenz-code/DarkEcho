@@ -8,6 +8,7 @@
 #include "EchoWeaponComponent.generated.h"
 
 class AEchoSoundProjectileActor;
+class AEchoVisualWaveActor;
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FEchoWeaponModeChangedSignature, EEchoWeaponMode, WeaponMode);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FEchoWeaponFiredSignature, EEchoWeaponMode, WeaponMode, FVector, Origin);
@@ -41,6 +42,15 @@ public:
 	UFUNCTION(BlueprintPure, Category = "Echo|Weapon")
 	FEchoWeaponTuning GetCurrentTuning() const;
 
+	UFUNCTION(BlueprintPure, Category = "Echo|Weapon")
+	FVector GetCurrentMuzzleLocation() const;
+
+	UFUNCTION(BlueprintCallable, Category = "Echo|Weapon|Skill")
+	void ActivateResonanceBeam(float Duration);
+
+	UFUNCTION(BlueprintPure, Category = "Echo|Weapon|Skill")
+	bool IsResonanceBeamActive() const { return bResonanceBeamActive; }
+
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Echo|Weapon")
 	TSubclassOf<AEchoSoundProjectileActor> ProjectileClass;
 
@@ -68,8 +78,47 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Echo|Weapon")
 	FEchoWeaponTuning LongRangeSnipeTuning;
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Echo|Weapon|Skill")
+	FEchoWeaponTuning ResonanceBeamTuning;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Echo|Weapon|Exposure")
+	bool bEmitFireExposureWave = true;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Echo|Weapon|Exposure")
+	TSubclassOf<AEchoVisualWaveActor> FireVisualWaveClass;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Echo|Weapon|Exposure")
+	bool bSpawnFireVisualWave = true;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Echo|Weapon|Exposure")
+	FLinearColor FireVisualWaveColor = FLinearColor(1.0f, 0.03f, 0.01f, 1.0f);
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Echo|Weapon|Exposure", meta = (ClampMin = "0.1"))
+	float FireVisualWaveThickness = 2.5f;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Echo|Weapon|Exposure", meta = (ClampMin = "1.0"))
+	float FireExposureWaveSpeed = 2400.0f;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Echo|Weapon|Exposure", meta = (ClampMin = "0.1"))
+	float FireExposureWaveWidth = 85.0f;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Echo|Weapon|Exposure", meta = (ClampMin = "0.01"))
+	float FireExposureWaveDuration = 1.4f;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Echo|Weapon|Exposure", meta = (ClampMin = "0.0"))
+	float StandardFireExposureIntensity = 9.0f;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Echo|Weapon|Exposure", meta = (ClampMin = "0.0"))
+	float RapidFireExposureIntensity = 7.0f;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Echo|Weapon|Exposure", meta = (ClampMin = "0.0"))
+	float SnipeFireExposureIntensity = 15.0f;
+
 	UPROPERTY(ReplicatedUsing = OnRep_CurrentWeaponMode, BlueprintReadOnly, Category = "Echo|Weapon")
 	EEchoWeaponMode CurrentWeaponMode = EEchoWeaponMode::Standard;
+
+	UPROPERTY(Replicated, BlueprintReadOnly, Category = "Echo|Weapon|Skill")
+	bool bResonanceBeamActive = false;
 
 	UPROPERTY(BlueprintAssignable, Category = "Echo|Weapon")
 	FEchoWeaponModeChangedSignature OnWeaponModeChanged;
@@ -87,6 +136,15 @@ private:
 	void GetViewFireOriginAndDirection(FVector& OutOrigin, FVector& OutDirection) const;
 	FVector GetMuzzleLocation(FVector ViewDirection) const;
 	FVector GetAimTargetPoint(FVector ViewOrigin, FVector ViewDirection) const;
+	float GetFireExposureIntensity(EEchoWeaponMode WeaponMode) const;
+	void TriggerLocalFireExposureWave(FVector Origin, FEchoWeaponTuning Tuning, EEchoWeaponMode WeaponMode);
+	void SpawnFireVisualWave(FVector Origin, FEchoWeaponTuning Tuning);
+
+	UFUNCTION(NetMulticast, Unreliable)
+	void MulticastTriggerFireExposureWave(FVector_NetQuantize Origin, FEchoWeaponTuning Tuning, EEchoWeaponMode WeaponMode);
+
+	void ClearResonanceBeam();
 
 	float LastFireTime = -1000.0f;
+	FTimerHandle ResonanceBeamTimerHandle;
 };

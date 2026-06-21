@@ -43,6 +43,27 @@ enum class EEchoWeaponMode : uint8
 	LongRangeSnipe UMETA(DisplayName = "Long Range Snipe")
 };
 
+UENUM(BlueprintType)
+enum class EEchoCharacterSkill : uint8
+{
+	WideEchoScan UMETA(DisplayName = "Wide Echo Scan"),
+	NoiseDecoy UMETA(DisplayName = "Noise Decoy"),
+	ResonanceBeam UMETA(DisplayName = "Resonance Beam"),
+	StealthRun UMETA(DisplayName = "Stealth Run")
+};
+
+UENUM(BlueprintType)
+enum class EEchoCharacterAnimState : uint8
+{
+	Idle UMETA(DisplayName = "Idle"),
+	NormalMove UMETA(DisplayName = "Normal Move"),
+	Sprint UMETA(DisplayName = "Sprint"),
+	SilentWalk UMETA(DisplayName = "Silent Walk"),
+	Jumping UMETA(DisplayName = "Jumping"),
+	Firing UMETA(DisplayName = "Firing"),
+	Dead UMETA(DisplayName = "Dead")
+};
+
 USTRUCT(BlueprintType)
 struct FEchoWeaponTuning
 {

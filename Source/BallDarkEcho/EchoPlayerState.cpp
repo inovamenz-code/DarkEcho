@@ -17,6 +17,9 @@ void AEchoPlayerState::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& Out
 	DOREPLIFETIME(AEchoPlayerState, Deaths);
 	DOREPLIFETIME(AEchoPlayerState, EchoPlayerNumber);
 	DOREPLIFETIME(AEchoPlayerState, EchoPlayerColor);
+	DOREPLIFETIME(AEchoPlayerState, DisplayPlayerId);
+	DOREPLIFETIME(AEchoPlayerState, bReady);
+	DOREPLIFETIME(AEchoPlayerState, bIsHost);
 }
 
 void AEchoPlayerState::AddKill()
@@ -38,6 +41,30 @@ void AEchoPlayerState::SetEchoIdentity(int32 InPlayerNumber, FLinearColor InPlay
 	OnRep_Identity();
 }
 
+void AEchoPlayerState::SetLobbyIdentity(const FString& InDisplayPlayerId, bool bInIsHost)
+{
+	DisplayPlayerId = InDisplayPlayerId.TrimStartAndEnd();
+	if (DisplayPlayerId.IsEmpty())
+	{
+		DisplayPlayerId = TEXT("Player");
+	}
+
+	bIsHost = bInIsHost;
+	if (bIsHost)
+	{
+		bReady = true;
+	}
+
+	SetPlayerName(DisplayPlayerId);
+	OnRep_LobbyState();
+}
+
+void AEchoPlayerState::SetReady(bool bInReady)
+{
+	bReady = bIsHost ? true : bInReady;
+	OnRep_LobbyState();
+}
+
 void AEchoPlayerState::OnRep_EchoScore()
 {
 	OnScoreChanged.Broadcast(Kills, Deaths);
@@ -45,4 +72,9 @@ void AEchoPlayerState::OnRep_EchoScore()
 
 void AEchoPlayerState::OnRep_Identity()
 {
+}
+
+void AEchoPlayerState::OnRep_LobbyState()
+{
+	OnLobbyPlayerStateChanged.Broadcast();
 }

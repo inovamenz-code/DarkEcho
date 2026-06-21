@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<WwiseDocument Type="WorkUnit" ID="{0E1EA814-2058-4653-B9F7-1C82E44E6A22}" SchemaVersion="133" RootDocumentID="{FEDA695C-EB34-4EE0-939F-3E2BBE2DE5C2}" ParentDocumentID="{FEDA695C-EB34-4EE0-939F-3E2BBE2DE5C2}">
+	<Events>
+		<WorkUnit Name="WU_Play_Scan_Charged" ID="{0E1EA814-2058-4653-B9F7-1C82E44E6A22}" OwnerID="{FEDA695C-EB34-4EE0-939F-3E2BBE2DE5C2}" PersistMode="Nested"/>
+	</Events>
+</WwiseDocument>

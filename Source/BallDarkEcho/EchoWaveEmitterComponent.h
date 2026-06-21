@@ -11,6 +11,13 @@ class UMaterialParameterCollection;
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FEchoWaveTriggeredSignature, FVector, Origin);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FEchoWaveSlotTriggeredSignature, FVector, Origin, int32, SlotIndex);
 
+UENUM(BlueprintType)
+enum class EEchoWaveOverflowPolicy : uint8
+{
+	DropNewest UMETA(DisplayName = "Drop Newest"),
+	OverwriteOldest UMETA(DisplayName = "Overwrite Oldest")
+};
+
 UCLASS(ClassGroup = (Echo), meta = (BlueprintSpawnableComponent))
 class BALLDARKECHO_API UEchoWaveEmitterComponent : public UActorComponent
 {
@@ -55,8 +62,11 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Echo", meta = (ClampMin = "1.0"))
 	float WaveMaxRadius = 1200.0f;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Echo", meta = (ClampMin = "1", ClampMax = "16"))
-	int32 MaxSimultaneousWaves = 4;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Echo", meta = (ClampMin = "1", ClampMax = "32"))
+	int32 MaxSimultaneousWaves = 16;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Echo")
+	EEchoWaveOverflowPolicy WaveOverflowPolicy = EEchoWaveOverflowPolicy::DropNewest;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Echo")
 	bool bUseNumberedParameterSlots = true;
@@ -106,7 +116,11 @@ private:
 		float InWaveDuration,
 		float InWaveMaxRadius);
 
+	int32 ChooseWaveSlot(float CurrentTime);
+	void EnsureSlotStateSize();
 	FName BuildSlotParameterName(FName TemplateName, int32 SlotIndex) const;
 
 	int32 NextWaveSlotIndex = 0;
+	TArray<float> SlotStartTimes;
+	TArray<float> SlotDurations;
 };

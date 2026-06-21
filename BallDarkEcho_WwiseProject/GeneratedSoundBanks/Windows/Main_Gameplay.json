@@ -1,0 +1,129 @@
+{
+ "SoundBanksInfo": {
+  "Platform": "Windows",
+  "BasePlatform": "Windows",
+  "SchemaVersion": "16",
+  "SoundBankVersion": "172",
+  "SoundBanks": [
+   {
+    "Id": "774580349",
+    "Type": "User",
+    "GUID": "{1DF0FBEC-B2D4-4BB9-83C5-789B49A76246}",
+    "Language": "SFX",
+    "Hash": "{72A4D158-9B23-3A33-B170-5BB468F378D1}",
+    "ObjectPath": "\\SoundBanks\\Default Work Unit\\Main_Gameplay",
+    "ShortName": "Main_Gameplay",
+    "Path": "Main_Gameplay.bnk",
+    "Media": [
+     {
+      "Id": "237410838",
+      "Language": "SFX",
+      "Streaming": "false",
+      "Location": "Memory",
+      "ShortName": "scficShoot.wav",
+      "CachePath": "3A/{3A67986A-7A0E-17EE-D2CD-8925DD91DE58}.wem"
+     },
+     {
+      "Id": "825503811",
+      "Language": "SFX",
+      "Streaming": "false",
+      "Location": "Memory",
+      "ShortName": "8wasr-3a419.wav",
+      "CachePath": "27/{27F02B6F-224D-8D67-2372-E3E67D446710}.wem"
+     },
+     {
+      "Id": "1045975195",
+      "Language": "SFX",
+      "Streaming": "false",
+      "Location": "Memory",
+      "ShortName": "move_normal_ball_roll_loop_01.wav",
+      "CachePath": "60/{600BD48D-6C0D-EF3B-E684-FFAB1667B483}.wem"
+     }
+    ],
+    "Events": [
+     {
+      "Id": "1698210093",
+      "Name": "Play_Move_Normal",
+      "ObjectPath": "\\Events\\Default Work Unit\\Play_Move_Normal",
+      "GUID": "{53802EA6-46A2-46CA-B849-CC3A43128545}",
+      "DurationType": "OneShot",
+      "DurationMin": "0.4353288",
+      "DurationMax": "0.4353288",
+      "MediaRefs": [
+       {
+        "Id": "825503811"
+       }
+      ]
+     },
+     {
+      "Id": "3824681503",
+      "Name": "Play_Move_Silent",
+      "ObjectPath": "\\Events\\Default Work Unit\\Play_Move_Silent",
+      "GUID": "{78B906BC-63AD-4C96-9555-337485D3C99A}",
+      "DurationType": "OneShot",
+      "DurationMin": "4.106917",
+      "DurationMax": "4.106917",
+      "MediaRefs": [
+       {
+        "Id": "1045975195"
+       }
+      ]
+     },
+     {
+      "Id": "1981685848",
+      "Name": "Play_Move_Sprint",
+      "ObjectPath": "\\Events\\Default Work Unit\\Play_Move_Sprint",
+      "GUID": "{8BAB1180-C553-4403-8B6F-4AB31A24A390}",
+      "DurationType": "OneShot",
+      "DurationMin": "4.106917",
+      "DurationMax": "4.106917",
+      "MediaRefs": [
+       {
+        "Id": "1045975195"
+       }
+      ]
+     },
+     {
+      "Id": "620949748",
+      "Name": "Play_Weapon_Rapid_Fire",
+      "ObjectPath": "\\Events\\Default Work Unit\\Play_Weapon_Rapid_Fire",
+      "GUID": "{446A50CF-3CA5-4908-A974-501B604A4E16}",
+      "DurationType": "OneShot",
+      "DurationMin": "1.02865",
+      "DurationMax": "1.02865",
+      "MediaRefs": [
+       {
+        "Id": "237410838"
+       }
+      ]
+     },
+     {
+      "Id": "1317724945",
+      "Name": "Play_Weapon_Snipe_Fire",
+      "ObjectPath": "\\Events\\Default Work Unit\\Play_Weapon_Snipe_Fire",
+      "GUID": "{5CB77170-E19A-44CF-9CE9-4CEC659D1072}",
+      "MaxAttenuation": "0",
+      "DurationType": "OneShot",
+      "DurationMin": "0",
+      "DurationMax": "0"
+     },
+     {
+      "Id": "170202313",
+      "Name": "Play_Weapon_Standard_Fire",
+      "ObjectPath": "\\Events\\Default Work Unit\\Play_Weapon_Standard_Fire",
+      "GUID": "{F3EF955E-10C1-4BE9-B887-12103B61A347}",
+      "DurationType": "OneShot",
+      "DurationMin": "1.02865",
+      "DurationMax": "1.02865",
+      "MediaRefs": [
+       {
+        "Id": "237410838"
+       }
+      ]
+     }
+    ]
+   }
+  ],
+  "FileHash": "{B26AD958-DB25-896C-3109-E0C68F3A4491}"
+ }
+}

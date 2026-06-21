@@ -138,6 +138,7 @@ void UEchoHUDPresenterComponent::CreateMiniMapWidget()
 	if (MiniMapWidget)
 	{
 		MiniMapWidget->MapAnchor = EEchoMapWidgetAnchor::TopLeft;
+		MiniMapWidget->AxisMode = EEchoMapAxisMode::WorldXRightWorldYUp;
 		MiniMapWidget->MapPanelSize = FVector2D(220.0f, 160.0f);
 		MiniMapWidget->MapPadding = 18.0f;
 		MiniMapWidget->CellGap = 0.5f;
@@ -173,6 +174,7 @@ void UEchoHUDPresenterComponent::CreateLargeMapWidget()
 	if (LargeMapWidget)
 	{
 		LargeMapWidget->MapAnchor = EEchoMapWidgetAnchor::Center;
+		LargeMapWidget->AxisMode = EEchoMapAxisMode::WorldXRightWorldYUp;
 		LargeMapWidget->MapPanelSize = FVector2D(700.0f, 500.0f);
 		LargeMapWidget->AddToViewport(20);
 		LargeMapWidget->SetVisibility(ESlateVisibility::Hidden);

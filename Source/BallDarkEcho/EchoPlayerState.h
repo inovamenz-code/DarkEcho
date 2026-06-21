@@ -7,6 +7,7 @@
 #include "EchoPlayerState.generated.h"
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FEchoScoreChangedSignature, int32, Kills, int32, Deaths);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FEchoLobbyPlayerStateChangedSignature);
 
 UCLASS()
 class BALLDARKECHO_API AEchoPlayerState : public APlayerState
@@ -27,6 +28,12 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "Echo|Identity")
 	void SetEchoIdentity(int32 InPlayerNumber, FLinearColor InPlayerColor);
 
+	UFUNCTION(BlueprintCallable, Category = "Echo|Lobby")
+	void SetLobbyIdentity(const FString& InDisplayPlayerId, bool bInIsHost);
+
+	UFUNCTION(BlueprintCallable, Category = "Echo|Lobby")
+	void SetReady(bool bInReady);
+
 	UFUNCTION(BlueprintPure, Category = "Echo|Score")
 	int32 GetKills() const { return Kills; }
 
@@ -45,8 +52,20 @@ public:
 	UPROPERTY(ReplicatedUsing = OnRep_Identity, BlueprintReadOnly, Category = "Echo|Identity")
 	FLinearColor EchoPlayerColor = FLinearColor::White;
 
+	UPROPERTY(ReplicatedUsing = OnRep_LobbyState, BlueprintReadOnly, Category = "Echo|Lobby")
+	FString DisplayPlayerId = TEXT("Player");
+
+	UPROPERTY(ReplicatedUsing = OnRep_LobbyState, BlueprintReadOnly, Category = "Echo|Lobby")
+	bool bReady = false;
+
+	UPROPERTY(ReplicatedUsing = OnRep_LobbyState, BlueprintReadOnly, Category = "Echo|Lobby")
+	bool bIsHost = false;
+
 	UPROPERTY(BlueprintAssignable, Category = "Echo|Score")
 	FEchoScoreChangedSignature OnScoreChanged;
+
+	UPROPERTY(BlueprintAssignable, Category = "Echo|Lobby")
+	FEchoLobbyPlayerStateChangedSignature OnLobbyPlayerStateChanged;
 
 protected:
 	UFUNCTION()
@@ -54,4 +73,7 @@ protected:
 
 	UFUNCTION()
 	void OnRep_Identity();
+
+	UFUNCTION()
+	void OnRep_LobbyState();
 };

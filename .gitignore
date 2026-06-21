@@ -43,3 +43,16 @@ desktop.ini
 # Local backups / generated reports
 Backup/
 UpgradeLog.htm
+
+# Local Codex workspace data
+.codex/
+
+# Unreal auto-backup assets
+Content/**/*_Backup_AutoBefore*
+
+# Local Wwise plugin installs are too large for normal Git history.
+# Install Wwise/Unreal integration locally instead of committing the SDK.
+Plugins/Wwise/
+Plugins/WwiseMotionOpenXRHelpers/
+Plugins/WwiseNiagara/
+Plugins/WwiseSoundEngine/

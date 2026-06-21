@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<WwiseDocument Type="WorkUnit" ID="{8F25F050-38F1-4624-91A0-25D4D3A061B5}" SchemaVersion="133" RootDocumentID="{FEDA695C-EB34-4EE0-939F-3E2BBE2DE5C2}" ParentDocumentID="{FEDA695C-EB34-4EE0-939F-3E2BBE2DE5C2}">
+	<Events>
+		<WorkUnit Name="WU_Play_Weapon_Rapid_Fire" ID="{8F25F050-38F1-4624-91A0-25D4D3A061B5}" OwnerID="{FEDA695C-EB34-4EE0-939F-3E2BBE2DE5C2}" PersistMode="Nested"/>
+	</Events>
+</WwiseDocument>

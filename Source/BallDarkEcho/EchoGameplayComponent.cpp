@@ -20,6 +20,7 @@ void UEchoGameplayComponent::BeginPlay()
 	Super::BeginPlay();
 
 	CurrentEchoEnergy = FMath::Clamp(CurrentEchoEnergy, 0.0f, MaxEchoEnergy);
+	MaxActiveEchoWaves = FMath::Max(MaxActiveEchoWaves, 16);
 	if (!bHighFrequencyUnlocked && CurrentFrequency == EEchoFrequency::High)
 	{
 		CurrentFrequency = EEchoFrequency::Low;
@@ -64,7 +65,19 @@ bool UEchoGameplayComponent::TryTriggerEcho()
 
 	if (UEchoWaveEmitterComponent* WaveEmitter = Owner->FindComponentByClass<UEchoWaveEmitterComponent>())
 	{
-		WaveEmitter->TriggerEchoWave();
+		WaveEmitter->MaxSimultaneousWaves = FMath::Max(WaveEmitter->MaxSimultaneousWaves, MaxActiveEchoWaves);
+		const float WaveDuration = WaveEmitter->WaveDuration;
+		const UWorld* World = GetWorld();
+		if (!World || ShouldEmitActiveEchoWave(World->GetTimeSeconds(), WaveDuration))
+		{
+			WaveEmitter->TriggerEchoWaveAtLocationWithSettings(
+				Owner->GetActorLocation() + WaveEmitter->WaveOriginOffset,
+				WaveEmitter->WaveSpeed * ActiveEchoWaveSpeedMultiplier,
+				WaveEmitter->WaveWidth,
+				WaveEmitter->WaveIntensity * ActiveEchoWaveIntensityMultiplier,
+				WaveDuration,
+				WaveEmitter->WaveMaxRadius);
+		}
 	}
 
 	PlayOwnerSound(CurrentFrequency == EEchoFrequency::High ? HighFrequencyEchoSound : LowFrequencyEchoSound);
@@ -154,6 +167,24 @@ void UEchoGameplayComponent::FailGameplay(FName Reason)
 float UEchoGameplayComponent::GetCurrentFrequencyCost() const
 {
 	return CurrentFrequency == EEchoFrequency::High ? HighFrequencyCost : LowFrequencyCost;
+}
+
+bool UEchoGameplayComponent::ShouldEmitActiveEchoWave(float CurrentTime, float WaveDuration)
+{
+	ActiveEchoWaveExpireTimes.RemoveAll(
+		[CurrentTime](float ExpireTime)
+		{
+			return ExpireTime <= CurrentTime;
+		});
+
+	const int32 ActiveWaveLimit = FMath::Max(16, MaxActiveEchoWaves);
+	if (ActiveEchoWaveExpireTimes.Num() >= ActiveWaveLimit)
+	{
+		return false;
+	}
+
+	ActiveEchoWaveExpireTimes.Add(CurrentTime + FMath::Max(0.01f, WaveDuration));
+	return true;
 }
 
 void UEchoGameplayComponent::PlayOwnerSound(USoundBase* Sound) const

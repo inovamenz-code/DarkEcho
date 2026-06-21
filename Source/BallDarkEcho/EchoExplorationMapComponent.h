@@ -78,6 +78,18 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Echo|Map", meta = (ClampMin = "0.01"))
 	float RevealTickInterval = 0.2f;
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Echo|Map", meta = (ClampMin = "0.0"))
+	float PlayerLocationUpdateDistance = 120.0f;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Echo|Map")
+	bool bAutoFitGridToMapGeometry = true;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Echo|Map", meta = (ClampMin = "0.0"))
+	float AutoFitMapPadding = 800.0f;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Echo|Map", meta = (ClampMin = "10.0"))
+	float LargeMapCellSize = 400.0f;
+
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Echo|Map|Walls")
 	bool bAutoDiscoverMapWalls = true;
 
@@ -105,6 +117,8 @@ private:
 	void HandleEchoSurfaceHit(const FEchoSurfaceHit& SurfaceHit);
 
 	void DiscoverMapWalls();
+	void AutoFitGridToDiscoveredMap();
+	bool RevealAtWorldLocationInternal(FVector WorldLocation, float Radius);
 	bool ShouldUseActorAsMapWall(const AActor* Actor) const;
 	void AddBoundsAsWallSegments(const FBox& Bounds);
 	bool RevealCell(FIntPoint Cell);
@@ -112,5 +126,7 @@ private:
 
 	TSet<FIntPoint> ExploredCells;
 	TArray<FEchoMapLineSegment> MapWallSegments;
+	FVector LastBroadcastPlayerLocation = FVector::ZeroVector;
 	float TickAccumulator = 0.0f;
+	bool bHasBroadcastPlayerLocation = false;
 };

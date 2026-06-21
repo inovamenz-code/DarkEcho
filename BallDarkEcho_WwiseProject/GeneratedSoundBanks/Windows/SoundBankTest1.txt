@@ -1,0 +1,6 @@
+Event	ID	Name			Wwise Object Path	Notes
+	565422487	Play_SFX_Echo_Test_Beep			\Default Work Unit\Play_SFX_Echo_Test_Beep	
+
+In Memory Audio	ID	Name	Audio source file		Wwise Object Path	Notes	Data Size
+	825503811	SFX_Echo_Test_Beep	.cache\27\{27F02B6F-224D-8D67-2372-E3E67D446710}.wem		\Containers\Default Work Unit\SFX_Echo_Test_Beep		76888
+

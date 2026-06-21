@@ -74,6 +74,15 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Echo|Frequency")
 	bool bHighFrequencyUnlocked = false;
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Echo|Active Wave", meta = (ClampMin = "16", ClampMax = "32"))
+	int32 MaxActiveEchoWaves = 16;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Echo|Active Wave", meta = (ClampMin = "0.01"))
+	float ActiveEchoWaveSpeedMultiplier = 0.8f;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Echo|Active Wave", meta = (ClampMin = "0.0"))
+	float ActiveEchoWaveIntensityMultiplier = 2.0f;
+
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Echo|Audio")
 	TObjectPtr<USoundBase> LowFrequencyEchoSound = nullptr;
 
@@ -112,6 +121,9 @@ protected:
 
 private:
 	float GetCurrentFrequencyCost() const;
+	bool ShouldEmitActiveEchoWave(float CurrentTime, float WaveDuration);
 	void PlayOwnerSound(USoundBase* Sound) const;
 	void RevealTargetsNearOwner(EEchoFrequency Frequency) const;
+
+	TArray<float> ActiveEchoWaveExpireTimes;
 };

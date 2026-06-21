@@ -1,0 +1,104 @@
+<?xml version="1.0" encoding="utf-8"?>
+<WwiseDocument Type="WorkUnit" ID="{061430D0-7E9F-4CD7-A644-FDB73EB89B63}" SchemaVersion="133">
+	<Containers>
+		<WorkUnit Name="Default Work Unit" ID="{061430D0-7E9F-4CD7-A644-FDB73EB89B63}" PersistMode="Standalone">
+			<ChildrenList>
+				<Sound Name="SFX_Echo_Test_Beep" ID="{0195FC13-0657-4B0A-AB02-161BE7761B97}" ShortID="920232927">
+					<ReferenceList>
+						<Reference Name="Conversion">
+							<ObjectRef Name="Default Conversion Settings" ID="{6D1B890C-9826-4384-BF07-C15223E9FB56}" WorkUnitID="{FDA9942F-05F1-47AA-AAB8-E16C29156B57}"/>
+						</Reference>
+						<Reference Name="OutputBus">
+							<ObjectRef Name="Main Audio Bus" ID="{1514A4D8-1DA6-412A-A17E-75CA0C2149F3}" WorkUnitID="{5D940802-4974-4C37-897D-02392F32ACB9}"/>
+						</Reference>
+					</ReferenceList>
+					<ChildrenList>
+						<AudioFileSource Name="8wasr-3a419" ID="{2EDF52F4-B5D0-48F2-87C8-C524FC03C0E3}">
+							<Language>SFX</Language>
+							<AudioFile>8wasr-3a419.wav</AudioFile>
+							<MediaIDList>
+								<MediaID ID="825503811"/>
+							</MediaIDList>
+						</AudioFileSource>
+					</ChildrenList>
+					<ActiveSourceList>
+						<ActiveSource Name="8wasr-3a419" ID="{2EDF52F4-B5D0-48F2-87C8-C524FC03C0E3}" Platform="Linked"/>
+					</ActiveSourceList>
+				</Sound>
+				<Sound Name="SFX_Move_BallRoll" ID="{10C00A1F-4DEA-4F40-A5C3-50A796ADA5CB}" ShortID="519607489">
+					<ReferenceList>
+						<Reference Name="Conversion">
+							<ObjectRef Name="Default Conversion Settings" ID="{6D1B890C-9826-4384-BF07-C15223E9FB56}" WorkUnitID="{FDA9942F-05F1-47AA-AAB8-E16C29156B57}"/>
+						</Reference>
+						<Reference Name="OutputBus">
+							<ObjectRef Name="Main Audio Bus" ID="{1514A4D8-1DA6-412A-A17E-75CA0C2149F3}" WorkUnitID="{5D940802-4974-4C37-897D-02392F32ACB9}"/>
+						</Reference>
+					</ReferenceList>
+					<ChildrenList>
+						<AudioFileSource Name="move_normal_ball_roll_loop_01" ID="{C274DAB6-BD7F-4673-8482-9DFD4398016F}">
+							<Language>SFX</Language>
+							<AudioFile>move_normal_ball_roll_loop_01.wav</AudioFile>
+							<MediaIDList>
+								<MediaID ID="1045975195"/>
+							</MediaIDList>
+						</AudioFileSource>
+					</ChildrenList>
+					<ActiveSourceList>
+						<ActiveSource Name="move_normal_ball_roll_loop_01" ID="{C274DAB6-BD7F-4673-8482-9DFD4398016F}" Platform="Linked"/>
+					</ActiveSourceList>
+				</Sound>
+				<Sound Name="scficShoot" ID="{26BDC185-5106-43CE-A162-FB07192979E9}" ShortID="798702850">
+					<ReferenceList>
+						<Reference Name="Conversion">
+							<ObjectRef Name="Default Conversion Settings" ID="{6D1B890C-9826-4384-BF07-C15223E9FB56}" WorkUnitID="{FDA9942F-05F1-47AA-AAB8-E16C29156B57}"/>
+						</Reference>
+						<Reference Name="OutputBus">
+							<ObjectRef Name="Main Audio Bus" ID="{1514A4D8-1DA6-412A-A17E-75CA0C2149F3}" WorkUnitID="{5D940802-4974-4C37-897D-02392F32ACB9}"/>
+						</Reference>
+					</ReferenceList>
+					<ChildrenList>
+						<AudioFileSource Name="scficShoot" ID="{E6B7B9CD-9607-4DF1-ABBD-CD012A05A335}">
+							<Language>SFX</Language>
+							<AudioFile>scficShoot.wav</AudioFile>
+							<MediaIDList>
+								<MediaID ID="838057282"/>
+							</MediaIDList>
+						</AudioFileSource>
+					</ChildrenList>
+					<ActiveSourceList>
+						<ActiveSource Name="scficShoot" ID="{E6B7B9CD-9607-4DF1-ABBD-CD012A05A335}" Platform="Linked"/>
+					</ActiveSourceList>
+				</Sound>
+				<Sound Name="Snipe" ID="{14655564-CC41-4E2A-86A8-353A3C28CE37}" ShortID="1000117364">
+					<ReferenceList>
+						<Reference Name="Conversion">
+							<ObjectRef Name="Default Conversion Settings" ID="{6D1B890C-9826-4384-BF07-C15223E9FB56}" WorkUnitID="{FDA9942F-05F1-47AA-AAB8-E16C29156B57}"/>
+						</Reference>
+						<Reference Name="OutputBus">
+							<ObjectRef Name="Main Audio Bus" ID="{1514A4D8-1DA6-412A-A17E-75CA0C2149F3}" WorkUnitID="{5D940802-4974-4C37-897D-02392F32ACB9}"/>
+						</Reference>
+					</ReferenceList>
+					<ChildrenList>
+						<AudioFileSource Name="scficShoot" ID="{F4C66C46-9FCD-4D60-9210-22A91EB773A0}">
+							<PropertyList>
+								<Property Name="FadeInDuration" Type="Real64" Value="0.1024"/>
+								<Property Name="FadeOutDuration" Type="Real64" Value="0.26996"/>
+								<Property Name="OverrideWavLoop" Type="bool" Value="True"/>
+								<Property Name="TrimBegin" Type="Real64" Value="17.20753"/>
+								<Property Name="TrimEnd" Type="Real64" Value="18.23618"/>
+							</PropertyList>
+							<Language>SFX</Language>
+							<AudioFile>scficShoot.wav</AudioFile>
+							<MediaIDList>
+								<MediaID ID="237410838"/>
+							</MediaIDList>
+						</AudioFileSource>
+					</ChildrenList>
+					<ActiveSourceList>
+						<ActiveSource Name="scficShoot" ID="{F4C66C46-9FCD-4D60-9210-22A91EB773A0}" Platform="Linked"/>
+					</ActiveSourceList>
+				</Sound>
+			</ChildrenList>
+		</WorkUnit>
+	</Containers>
+</WwiseDocument>

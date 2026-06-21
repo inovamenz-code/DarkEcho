@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<WwiseDocument Type="WorkUnit" ID="{30AB5459-B871-46F7-B474-D6660B3FF884}" SchemaVersion="133">
+	<SoundBanks>
+		<WorkUnit Name="Default Work Unit" ID="{30AB5459-B871-46F7-B474-D6660B3FF884}" PersistMode="Standalone">
+			<ChildrenList>
+				<SoundBank Name="SoundBankTest1" ID="{D2EE024C-7F5C-4361-85DD-BD6FA1F761C5}">
+					<ObjectInclusionList>
+						<ObjectRef Name="Play_SFX_Echo_Test_Beep" ID="{7D31BFA5-BD22-4A55-BEDC-1EC0C7720CDA}" WorkUnitID="{FEDA695C-EB34-4EE0-939F-3E2BBE2DE5C2}" Origin="Manual" Filter="7"/>
+					</ObjectInclusionList>
+					<ObjectExclusionList/>
+					<GameSyncExclusionList/>
+				</SoundBank>
+				<SoundBank Name="Main_Gameplay" ID="{1DF0FBEC-B2D4-4BB9-83C5-789B49A76246}">
+					<ObjectInclusionList>
+						<ObjectRef Name="Play_Move_Sprint" ID="{8BAB1180-C553-4403-8B6F-4AB31A24A390}" WorkUnitID="{FEDA695C-EB34-4EE0-939F-3E2BBE2DE5C2}" Origin="Manual" Filter="7"/>
+						<ObjectRef Name="Play_Move_Normal" ID="{53802EA6-46A2-46CA-B849-CC3A43128545}" WorkUnitID="{FEDA695C-EB34-4EE0-939F-3E2BBE2DE5C2}" Origin="Manual" Filter="7"/>
+						<ObjectRef Name="Play_Move_Silent" ID="{78B906BC-63AD-4C96-9555-337485D3C99A}" WorkUnitID="{FEDA695C-EB34-4EE0-939F-3E2BBE2DE5C2}" Origin="Manual" Filter="7"/>
+					</ObjectInclusionList>
+					<ObjectExclusionList/>
+					<GameSyncExclusionList/>
+				</SoundBank>
+			</ChildrenList>
+		</WorkUnit>
+	</SoundBanks>
+</WwiseDocument>

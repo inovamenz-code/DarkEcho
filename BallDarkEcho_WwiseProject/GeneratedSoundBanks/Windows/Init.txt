@@ -1,0 +1,13 @@
+Audio Bus	ID	Name			Wwise Object Path	Notes
+	85412153	Ambience			\Default Work Unit\Main Audio Bus\Ambience	
+	817435346	Enemy_Cues			\Default Work Unit\Main Audio Bus\Enemy_Cues	
+	1281534399	Reverb_Reflection			\Default Work Unit\Main Audio Bus\Reverb_Reflection	
+	1551306167	UI			\Default Work Unit\Main Audio Bus\UI	
+	1813718568	Player_Feedback			\Default Work Unit\Main Audio Bus\Player_Feedback	
+	2246998526	Main Audio Bus			\Default Work Unit\Main Audio Bus	
+	3401228817	Gameplay_SFX			\Default Work Unit\Main Audio Bus\Gameplay_SFX	
+
+Audio Devices	ID	Name	Type				Notes
+	2317455096	No_Output	No Output			
+	3859886410	System	System			
+

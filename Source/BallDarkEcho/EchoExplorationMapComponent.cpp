@@ -18,6 +18,10 @@ void UEchoExplorationMapComponent::BeginPlay()
 	{
 		DiscoverMapWalls();
 	}
+	if (bAutoFitGridToMapGeometry)
+	{
+		AutoFitGridToDiscoveredMap();
+	}
 
 	if (AActor* Owner = GetOwner())
 	{
@@ -25,6 +29,10 @@ void UEchoExplorationMapComponent::BeginPlay()
 		{
 			Scanner->OnEchoSurfaceHit.AddDynamic(this, &UEchoExplorationMapComponent::HandleEchoSurfaceHit);
 		}
+
+		LastBroadcastPlayerLocation = Owner->GetActorLocation();
+		bHasBroadcastPlayerLocation = true;
+		RevealAtWorldLocation(LastBroadcastPlayerLocation, PlayerRevealRadius);
 	}
 }
 
@@ -44,14 +52,33 @@ void UEchoExplorationMapComponent::TickComponent(float DeltaTime, ELevelTick Tic
 	}
 
 	TickAccumulator = 0.0f;
-	RevealAtWorldLocation(GetOwner()->GetActorLocation(), PlayerRevealRadius);
+
+	const FVector OwnerLocation = GetOwner()->GetActorLocation();
+	const bool bAnyCellRevealed = RevealAtWorldLocationInternal(OwnerLocation, PlayerRevealRadius);
+	const bool bMovedEnough = !bHasBroadcastPlayerLocation
+		|| FVector::DistSquared2D(OwnerLocation, LastBroadcastPlayerLocation) >= FMath::Square(PlayerLocationUpdateDistance);
+
+	if (bAnyCellRevealed || bMovedEnough)
+	{
+		LastBroadcastPlayerLocation = OwnerLocation;
+		bHasBroadcastPlayerLocation = true;
+		OnMapChanged.Broadcast();
+	}
 }
 
 void UEchoExplorationMapComponent::RevealAtWorldLocation(FVector WorldLocation, float Radius)
 {
+	if (RevealAtWorldLocationInternal(WorldLocation, Radius))
+	{
+		OnMapChanged.Broadcast();
+	}
+}
+
+bool UEchoExplorationMapComponent::RevealAtWorldLocationInternal(FVector WorldLocation, float Radius)
+{
 	if (Radius < 0.0f)
 	{
-		return;
+		return false;
 	}
 
 	const FIntPoint CenterCell = WorldLocationToCell(WorldLocation);
@@ -76,10 +103,7 @@ void UEchoExplorationMapComponent::RevealAtWorldLocation(FVector WorldLocation, 
 		}
 	}
 
-	if (bAnyCellRevealed)
-	{
-		OnMapChanged.Broadcast();
-	}
+	return bAnyCellRevealed;
 }
 
 bool UEchoExplorationMapComponent::IsCellExplored(FIntPoint Cell) const
@@ -174,6 +198,42 @@ void UEchoExplorationMapComponent::DiscoverMapWalls()
 
 		AddBoundsAsWallSegments(Bounds);
 	}
+}
+
+void UEchoExplorationMapComponent::AutoFitGridToDiscoveredMap()
+{
+	FBox2D MapBounds(EForceInit::ForceInit);
+	for (const FEchoMapLineSegment& Segment : MapWallSegments)
+	{
+		MapBounds += Segment.Start;
+		MapBounds += Segment.End;
+	}
+
+	if (const AActor* Owner = GetOwner())
+	{
+		const FVector OwnerLocation = Owner->GetActorLocation();
+		MapBounds += FVector2D(OwnerLocation.X, OwnerLocation.Y);
+	}
+
+	if (!MapBounds.bIsValid)
+	{
+		return;
+	}
+
+	MapBounds = MapBounds.ExpandBy(AutoFitMapPadding);
+	const FVector2D MapSize = MapBounds.GetSize();
+	const float LongestAxis = FMath::Max(MapSize.X, MapSize.Y);
+	if (LongestAxis > 8000.0f && CellSize <= 150.0f)
+	{
+		CellSize = LargeMapCellSize;
+		PlayerRevealRadius = FMath::Max(PlayerRevealRadius, 900.0f);
+		EchoHitRevealRadius = FMath::Max(EchoHitRevealRadius, 900.0f);
+	}
+
+	MapOrigin = MapBounds.Min;
+	GridSize = FIntPoint(
+		FMath::Max(1, FMath::CeilToInt(MapSize.X / FMath::Max(1.0f, CellSize))),
+		FMath::Max(1, FMath::CeilToInt(MapSize.Y / FMath::Max(1.0f, CellSize))));
 }
 
 bool UEchoExplorationMapComponent::ShouldUseActorAsMapWall(const AActor* Actor) const
