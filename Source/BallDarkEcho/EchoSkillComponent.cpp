@@ -3,6 +3,7 @@
 #include "EchoSkillComponent.h"
 
 #include "Components/InputComponent.h"
+#include "EchoAudioEventComponent.h"
 #include "EchoBeamActor.h"
 #include "EchoCharacterStateComponent.h"
 #include "EchoCombatComponent.h"
@@ -236,16 +237,20 @@ void UEchoSkillComponent::ActivateWideEchoScan()
 
 	const FVector Origin = Owner->GetActorLocation();
 	MulticastSpawnScanVisualWave(Origin);
+	MulticastPlayScanAudio(Origin);
 
 	if (UEchoPulseScannerComponent* Scanner = Owner->FindComponentByClass<UEchoPulseScannerComponent>())
 	{
 		const float PreviousRadius = Scanner->PulseRadius;
 		const float PreviousRevealDuration = Scanner->TargetRevealDuration;
+		const bool bPreviousEmitScanAudio = Scanner->bEmitScanAudio;
 		Scanner->PulseRadius = FMath::Max(Scanner->PulseRadius, WideScanRadius);
 		Scanner->TargetRevealDuration = FMath::Max(Scanner->TargetRevealDuration, WideScanRevealDuration);
+		Scanner->bEmitScanAudio = false;
 		Scanner->TriggerEchoPulseWithFrequency(Scanner->CurrentFrequency);
 		Scanner->PulseRadius = PreviousRadius;
 		Scanner->TargetRevealDuration = PreviousRevealDuration;
+		Scanner->bEmitScanAudio = bPreviousEmitScanAudio;
 	}
 
 	UWorld* World = GetWorld();
@@ -254,6 +259,7 @@ void UEchoSkillComponent::ActivateWideEchoScan()
 		return;
 	}
 
+	TArray<AActor*> RevealedTargets;
 	for (TActorIterator<AActor> ActorIterator(World); ActorIterator; ++ActorIterator)
 	{
 		AActor* TargetActor = *ActorIterator;
@@ -269,9 +275,14 @@ void UEchoSkillComponent::ActivateWideEchoScan()
 
 		if (UEchoRevealTargetComponent* RevealTarget = TargetActor->FindComponentByClass<UEchoRevealTargetComponent>())
 		{
-			RevealTarget->Reveal(EEchoFrequency::Low, WideScanRevealDuration);
+			// Keep the server authoritative over eligibility.  Do not call Reveal
+			// here: render custom-depth state must be applied on the scanning
+			// player's client rather than replicated to every player.
+			RevealedTargets.Add(TargetActor);
 		}
 	}
+
+	ClientRevealWideScanTargets(RevealedTargets, EEchoFrequency::Low, WideScanRevealDuration);
 
 	OnSkillStateChanged.Broadcast(SkillType, false);
 }
@@ -475,5 +486,27 @@ void UEchoSkillComponent::MulticastSpawnScanVisualWave_Implementation(FVector_Ne
 			WideScanRadius,
 			1.6f,
 			4.0f);
+	}
+}
+
+void UEchoSkillComponent::ClientRevealWideScanTargets_Implementation(const TArray<AActor*>& Targets, EEchoFrequency Frequency, float Duration)
+{
+	for (AActor* Target : Targets)
+	{
+		if (UEchoRevealTargetComponent* RevealTarget = Target ? Target->FindComponentByClass<UEchoRevealTargetComponent>() : nullptr)
+		{
+			RevealTarget->Reveal(Frequency, Duration);
+		}
+	}
+}
+
+void UEchoSkillComponent::MulticastPlayScanAudio_Implementation(FVector_NetQuantize Origin)
+{
+	if (AActor* Owner = GetOwner())
+	{
+		if (UEchoAudioEventComponent* AudioEvents = Owner->FindComponentByClass<UEchoAudioEventComponent>())
+		{
+			AudioEvents->PostEchoSoundEvent(EEchoSoundEventType::ScanPulse, Origin, 0.45f);
+		}
 	}
 }

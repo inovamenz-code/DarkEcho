@@ -46,6 +46,9 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Echo|Movement Audio", meta = (ClampMin = "0.0"))
 	float MovementAudioMinInterval = 0.15f;
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Echo|Movement Audio", meta = (ClampMin = "0.0"))
+	float MovementAudioFadeOutSeconds = 0.08f;
+
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Echo|Movement Wave", meta = (ClampMin = "1.0"))
 	float MovementWaveSpeed = 2000.0f;
 
@@ -108,6 +111,7 @@ public:
 
 protected:
 	virtual void BeginPlay() override;
+	virtual void EndPlay(const EEndPlayReason::Type EndPlayReason) override;
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
 
 private:
@@ -115,6 +119,7 @@ private:
 	void EmitMovementPulseBurst();
 	void EmitOneMovementWave();
 	void EmitPulseForMovementStateChange(bool bActive);
+	void StopMovementAudio();
 	float GetCurrentPulseInterval() const;
 	void GetCurrentWaveSettings(float& OutSpeed, float& OutWidth, float& OutIntensity, float& OutDuration, float& OutMaxRadius) const;
 	const UEchoCharacterStateComponent* GetCharacterStateComponent() const;
@@ -129,6 +134,7 @@ private:
 	float SampleAccumulator = 0.0f;
 	float MovingAccumulator = 0.0f;
 	float LastMovementAudioPostTime = -1000.0f;
+	int32 ActiveMovementPlayingId = 0;
 	int32 PendingBurstWaves = 0;
 	bool bWasMoving = false;
 	bool bSuppressMovementEcho = false;

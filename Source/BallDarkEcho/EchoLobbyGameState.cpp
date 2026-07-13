@@ -17,7 +17,7 @@ void AEchoLobbyGameState::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& 
 void AEchoLobbyGameState::SetLobbySettings(const FString& InRoomName, const FString& InSelectedMapKey, int32 InMaxPlayers)
 {
 	RoomName = InRoomName.IsEmpty() ? TEXT("LAN Room") : InRoomName;
-	SelectedMapKey = InSelectedMapKey.IsEmpty() ? TEXT("battle1") : InSelectedMapKey;
+	SelectedMapKey = InSelectedMapKey.IsEmpty() ? TEXT("level1") : InSelectedMapKey;
 	MaxPlayers = FMath::Clamp(InMaxPlayers, 1, 8);
 	OnRep_LobbyState();
 }

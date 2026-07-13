@@ -3,6 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "EchoTypes.h"
 #include "Blueprint/UserWidget.h"
 #include "EchoLobbyPlayerRowWidget.generated.h"
 
@@ -15,7 +16,7 @@ class BALLDARKECHO_API UEchoLobbyPlayerRowWidget : public UUserWidget
 
 public:
 	UFUNCTION(BlueprintCallable, Category = "Echo|Lobby")
-	void SetupPlayer(const FString& DisplayPlayerId, bool bReady, bool bIsHost);
+	void SetupPlayer(const FString& DisplayPlayerId, bool bReady, bool bIsHost, EEchoCharacterSkill SelectedSkill);
 
 protected:
 	UPROPERTY(BlueprintReadOnly, meta = (BindWidgetOptional), Category = "Echo|Lobby")
@@ -23,4 +24,7 @@ protected:
 
 	UPROPERTY(BlueprintReadOnly, meta = (BindWidgetOptional), Category = "Echo|Lobby")
 	TObjectPtr<UTextBlock> Text_PlayerState = nullptr;
+
+	UPROPERTY(BlueprintReadOnly, meta = (BindWidgetOptional), Category = "Echo|Lobby")
+	TObjectPtr<UTextBlock> Text_PlayerSkill = nullptr;
 };

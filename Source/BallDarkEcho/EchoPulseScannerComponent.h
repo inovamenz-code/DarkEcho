@@ -84,6 +84,11 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Echo")
 	bool bRevealEchoTargets = true;
 
+	// Skill scans multicast their audio separately, so the authoritative server
+	// can temporarily disable this to guarantee exactly one audible pulse.
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Echo")
+	bool bEmitScanAudio = true;
+
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Echo", meta = (ClampMin = "0.0"))
 	float TargetRevealDuration = 2.0f;
 

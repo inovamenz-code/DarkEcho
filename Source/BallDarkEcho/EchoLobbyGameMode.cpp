@@ -11,12 +11,24 @@
 #include "OnlineSubsystem.h"
 #include "Online/OnlineSessionNames.h"
 
+namespace
+{
+	FString NormalizeSelectableMapKey(const FString& MapKey)
+	{
+		if (MapKey.Equals(TEXT("level1"), ESearchCase::IgnoreCase) || MapKey == TEXT("LeveL1")) return TEXT("level1");
+		if (MapKey.Equals(TEXT("tian"), ESearchCase::IgnoreCase) || MapKey == TEXT("level-Test")) return TEXT("tian");
+		if (MapKey.Equals(TEXT("battle2"), ESearchCase::IgnoreCase) || MapKey.Equals(TEXT("battle1"), ESearchCase::IgnoreCase)) return TEXT("battle2");
+		return TEXT("level1");
+	}
+}
+
 AEchoLobbyGameMode::AEchoLobbyGameMode()
 {
 	DefaultPawnClass = nullptr;
 	GameStateClass = AEchoLobbyGameState::StaticClass();
 	PlayerControllerClass = AEchoLobbyPlayerController::StaticClass();
 	PlayerStateClass = AEchoPlayerState::StaticClass();
+	bUseSeamlessTravel = true;
 }
 
 void AEchoLobbyGameMode::InitGame(const FString& MapName, const FString& Options, FString& ErrorMessage)
@@ -34,6 +46,7 @@ void AEchoLobbyGameMode::InitGame(const FString& MapName, const FString& Options
 			Session->SessionSettings.Get(UEchoGameInstance::MaxPlayersSettingKey, InitialMaxPlayers);
 		}
 	}
+	InitialSelectedMapKey = NormalizeSelectableMapKey(InitialSelectedMapKey);
 }
 
 void AEchoLobbyGameMode::InitGameState()
@@ -102,6 +115,14 @@ void AEchoLobbyGameMode::SetPlayerReady(AEchoLobbyPlayerController* PlayerContro
 	RefreshCanStart();
 }
 
+void AEchoLobbyGameMode::SetPlayerSelectedSkill(AEchoLobbyPlayerController* PlayerController, EEchoCharacterSkill SelectedSkill)
+{
+	if (AEchoPlayerState* EchoPlayerState = PlayerController ? PlayerController->GetPlayerState<AEchoPlayerState>() : nullptr)
+	{
+		EchoPlayerState->SetSelectedSkill(SelectedSkill);
+	}
+}
+
 void AEchoLobbyGameMode::UpdateRoomSettings(AEchoLobbyPlayerController* PlayerController, const FString& SelectedMapKey, int32 MaxPlayers)
 {
 	if (!IsHostController(PlayerController))
@@ -117,7 +138,8 @@ void AEchoLobbyGameMode::UpdateRoomSettings(AEchoLobbyPlayerController* PlayerCo
 
 	const int32 CurrentPlayers = GetCurrentPlayerCount();
 	const int32 ClampedMaxPlayers = FMath::Clamp(MaxPlayers, FMath::Max(1, CurrentPlayers), 8);
-	LobbyGameState->SetLobbySettings(LobbyGameState->RoomName, SelectedMapKey, ClampedMaxPlayers);
+	const FString NormalizedMapKey = NormalizeSelectableMapKey(SelectedMapKey);
+	LobbyGameState->SetLobbySettings(LobbyGameState->RoomName, NormalizedMapKey, ClampedMaxPlayers);
 
 	if (IOnlineSubsystem* Subsystem = IOnlineSubsystem::Get())
 	{
@@ -126,7 +148,7 @@ void AEchoLobbyGameMode::UpdateRoomSettings(AEchoLobbyPlayerController* PlayerCo
 		if (Session)
 		{
 			Session->SessionSettings.NumPublicConnections = ClampedMaxPlayers;
-			Session->SessionSettings.Set(UEchoGameInstance::SelectedMapSettingKey, SelectedMapKey, EOnlineDataAdvertisementType::ViaOnlineServiceAndPing);
+			Session->SessionSettings.Set(UEchoGameInstance::SelectedMapSettingKey, NormalizedMapKey, EOnlineDataAdvertisementType::ViaOnlineServiceAndPing);
 			Session->SessionSettings.Set(UEchoGameInstance::MaxPlayersSettingKey, ClampedMaxPlayers, EOnlineDataAdvertisementType::ViaOnlineServiceAndPing);
 			Sessions->UpdateSession(NAME_GameSession, Session->SessionSettings, true);
 		}
@@ -233,26 +255,24 @@ FString AEchoLobbyGameMode::BuildTravelUrl(const FString& MapKey) const
 	static const FString StoryGameMode = TEXT("/Game/ThirdPerson/Blueprints/BP_ThirdPersonGameMode.BP_ThirdPersonGameMode_C");
 	static const FString BattleGameMode = TEXT("/Game/BluePrints/BP_EchoDeathmatchGameMode.BP_EchoDeathmatchGameMode_C");
 
-	FString MapPath = TEXT("/Game/Maps/DM_EchoAtrium");
-	FString GameModePath = BattleGameMode;
+	FString MapPath = TEXT("/Game/Maps/LeveL1");
+	FString GameModePath = StoryGameMode;
 
-	if (MapKey == TEXT("LeveL1"))
+	const FString NormalizedMapKey = NormalizeSelectableMapKey(MapKey);
+	if (NormalizedMapKey == TEXT("level1"))
 	{
 		MapPath = TEXT("/Game/Maps/LeveL1");
 		GameModePath = StoryGameMode;
 	}
-	else if (MapKey == TEXT("Level2"))
-	{
-		MapPath = TEXT("/Game/Maps/Level2");
-		GameModePath = StoryGameMode;
-	}
-	else if (MapKey == TEXT("level-Test"))
+	else if (NormalizedMapKey == TEXT("tian"))
 	{
 		MapPath = TEXT("/Game/Maps/DM_Tian");
+		GameModePath = BattleGameMode;
 	}
-	else if (MapKey == TEXT("battle2"))
+	else if (NormalizedMapKey == TEXT("battle2"))
 	{
 		MapPath = TEXT("/Game/Maps/Delta_Admin_1F");
+		GameModePath = BattleGameMode;
 	}
 
 	return FString::Printf(TEXT("%s?game=%s"), *MapPath, *GameModePath);

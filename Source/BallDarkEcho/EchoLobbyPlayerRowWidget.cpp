@@ -4,7 +4,26 @@
 
 #include "Components/TextBlock.h"
 
-void UEchoLobbyPlayerRowWidget::SetupPlayer(const FString& DisplayPlayerId, bool bReady, bool bIsHost)
+namespace
+{
+	FText GetSkillDisplayName(EEchoCharacterSkill Skill)
+	{
+		switch (Skill)
+		{
+		case EEchoCharacterSkill::NoiseDecoy:
+			return FText::FromString(TEXT("Noise Decoy"));
+		case EEchoCharacterSkill::ResonanceBeam:
+			return FText::FromString(TEXT("Resonance Beam"));
+		case EEchoCharacterSkill::StealthRun:
+			return FText::FromString(TEXT("Stealth Run"));
+		case EEchoCharacterSkill::WideEchoScan:
+		default:
+			return FText::FromString(TEXT("Wide Echo Scan"));
+		}
+	}
+}
+
+void UEchoLobbyPlayerRowWidget::SetupPlayer(const FString& DisplayPlayerId, bool bReady, bool bIsHost, EEchoCharacterSkill SelectedSkill)
 {
 	if (Text_PlayerId)
 	{
@@ -15,5 +34,10 @@ void UEchoLobbyPlayerRowWidget::SetupPlayer(const FString& DisplayPlayerId, bool
 	{
 		const FString StateText = bIsHost ? TEXT("HOST") : (bReady ? TEXT("READY") : TEXT("WAITING"));
 		Text_PlayerState->SetText(FText::FromString(StateText));
+	}
+
+	if (Text_PlayerSkill)
+	{
+		Text_PlayerSkill->SetText(GetSkillDisplayName(SelectedSkill));
 	}
 }

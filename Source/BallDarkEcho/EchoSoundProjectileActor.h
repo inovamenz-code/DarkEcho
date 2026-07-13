@@ -85,12 +85,17 @@ protected:
 	UFUNCTION()
 	void HandleOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComponent, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
 
+	UFUNCTION()
+	void HandleHit(UPrimitiveComponent* HitComponent, AActor* OtherActor, UPrimitiveComponent* OtherComponent, FVector NormalImpulse, const FHitResult& Hit);
+
 private:
 	float CalculateDamageAtCurrentDistance() const;
 	float GetImpactIntensity() const;
 	void ApplyBeamVisuals();
+	void ProcessImpact(AActor* OtherActor, const FHitResult& HitResult);
 	bool TryApplyBeamDamage(AActor* OtherActor);
 	bool TryReflectFromHit(const FHitResult& SweepResult);
+	FVector ResolveImpactLocation(const FHitResult& HitResult) const;
 	void TriggerLocalImpactWave(FVector Origin);
 	void PostImpactAudio(FVector Origin);
 
@@ -116,4 +121,5 @@ private:
 	TMap<TObjectPtr<AActor>, float> LastBeamDamageTimes;
 
 	bool bBeamVisualsApplied = false;
+	bool bTerminalImpactResolved = false;
 };

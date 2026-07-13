@@ -3,6 +3,7 @@
 #include "EchoPulseScannerComponent.h"
 
 #include "DrawDebugHelpers.h"
+#include "EchoAudioEventComponent.h"
 #include "EchoRevealTargetComponent.h"
 #include "Engine/World.h"
 #include "GameFramework/Actor.h"
@@ -44,6 +45,14 @@ void UEchoPulseScannerComponent::TriggerEchoPulseAtLocationWithFrequency(FVector
 
 	CurrentFrequency = Frequency;
 	OnEchoPulseTriggered.Broadcast(Origin, Frequency);
+
+	if (bEmitScanAudio)
+	{
+		if (UEchoAudioEventComponent* AudioEvents = Owner->FindComponentByClass<UEchoAudioEventComponent>())
+		{
+			AudioEvents->PostEchoSoundEvent(EEchoSoundEventType::ScanPulse, Origin, 0.45f);
+		}
+	}
 
 	TArray<FEchoSurfaceHit> AcceptedHits;
 	AcceptedHits.Reserve(MaxSurfaceHits);

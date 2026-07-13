@@ -20,6 +20,20 @@ void AEchoPlayerState::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& Out
 	DOREPLIFETIME(AEchoPlayerState, DisplayPlayerId);
 	DOREPLIFETIME(AEchoPlayerState, bReady);
 	DOREPLIFETIME(AEchoPlayerState, bIsHost);
+	DOREPLIFETIME(AEchoPlayerState, SelectedSkill);
+}
+
+void AEchoPlayerState::CopyProperties(APlayerState* PlayerState)
+{
+	Super::CopyProperties(PlayerState);
+
+	if (AEchoPlayerState* EchoPlayerState = Cast<AEchoPlayerState>(PlayerState))
+	{
+		EchoPlayerState->DisplayPlayerId = DisplayPlayerId;
+		EchoPlayerState->SelectedSkill = SelectedSkill;
+		EchoPlayerState->bReady = bReady;
+		EchoPlayerState->bIsHost = bIsHost;
+	}
 }
 
 void AEchoPlayerState::AddKill()
@@ -62,6 +76,12 @@ void AEchoPlayerState::SetLobbyIdentity(const FString& InDisplayPlayerId, bool b
 void AEchoPlayerState::SetReady(bool bInReady)
 {
 	bReady = bIsHost ? true : bInReady;
+	OnRep_LobbyState();
+}
+
+void AEchoPlayerState::SetSelectedSkill(EEchoCharacterSkill InSelectedSkill)
+{
+	SelectedSkill = InSelectedSkill;
 	OnRep_LobbyState();
 }
 

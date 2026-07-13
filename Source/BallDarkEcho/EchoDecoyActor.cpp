@@ -9,6 +9,7 @@
 #include "EchoRevealTargetComponent.h"
 #include "EchoWaveEmitterComponent.h"
 #include "GameFramework/Pawn.h"
+#include "Net/UnrealNetwork.h"
 #include "UObject/ConstructorHelpers.h"
 
 AEchoDecoyActor::AEchoDecoyActor()
@@ -70,12 +71,24 @@ void AEchoDecoyActor::Tick(float DeltaSeconds)
 {
 	Super::Tick(DeltaSeconds);
 
+	if (!HasAuthority() || bTriggered)
+	{
+		return;
+	}
+
 	NoiseAccumulator += DeltaSeconds;
 	if (NoiseAccumulator >= NoiseWaveInterval)
 	{
 		NoiseAccumulator = FMath::Fmod(NoiseAccumulator, NoiseWaveInterval);
-		EmitNoiseWave();
+		MulticastEmitFakeFootstep(GetActorLocation());
 	}
+}
+
+void AEchoDecoyActor::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
+{
+	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+
+	DOREPLIFETIME(AEchoDecoyActor, SourceActor);
 }
 
 void AEchoDecoyActor::InitializeDecoy(AController* InInstigatorController, AActor* InSourceActor)
@@ -113,9 +126,13 @@ void AEchoDecoyActor::HandleDeathStateChanged(bool bDead)
 	}
 }
 
-void AEchoDecoyActor::EmitNoiseWave()
+void AEchoDecoyActor::EmitFakeFootstep(FVector Origin)
 {
 	AActor* WaveSource = SourceActor.Get();
+	if (!WaveSource)
+	{
+		WaveSource = GetOwner();
+	}
 	if (!WaveSource)
 	{
 		WaveSource = this;
@@ -124,7 +141,7 @@ void AEchoDecoyActor::EmitNoiseWave()
 	if (UEchoWaveEmitterComponent* WaveEmitter = WaveSource->FindComponentByClass<UEchoWaveEmitterComponent>())
 	{
 		WaveEmitter->TriggerEchoWaveAtLocationWithSettings(
-			GetActorLocation(),
+			Origin,
 			NoiseWaveSpeed,
 			NoiseWaveWidth,
 			NoiseWaveIntensity,
@@ -134,8 +151,13 @@ void AEchoDecoyActor::EmitNoiseWave()
 
 	if (UEchoAudioEventComponent* AudioEvents = WaveSource->FindComponentByClass<UEchoAudioEventComponent>())
 	{
-		AudioEvents->PostEchoSoundEvent(EEchoSoundEventType::MovementSprint, GetActorLocation(), 0.8f);
+		AudioEvents->PostEchoSoundEvent(EEchoSoundEventType::DecoyFootstep, Origin, DecoyFootstepLoudness);
 	}
+}
+
+void AEchoDecoyActor::MulticastEmitFakeFootstep_Implementation(FVector_NetQuantize Origin)
+{
+	EmitFakeFootstep(Origin);
 }
 
 void AEchoDecoyActor::TriggerDecoy(AActor* TriggeringActor)
@@ -146,7 +168,6 @@ void AEchoDecoyActor::TriggerDecoy(AActor* TriggeringActor)
 	}
 
 	bTriggered = true;
-	EmitNoiseWave();
 
 	if (UEchoCombatComponent* CombatComponentOnTarget = TriggeringActor ? TriggeringActor->FindComponentByClass<UEchoCombatComponent>() : nullptr)
 	{

@@ -9,6 +9,8 @@
 #include "EchoCrosshairWidget.h"
 #include "EchoGameplayComponent.h"
 #include "EchoHUDWidget.h"
+#include "EchoPauseMenuWidget.h"
+#include "EchoGameInstance.h"
 #include "EchoPlayerState.h"
 #include "EchoWeaponComponent.h"
 #include "Components/InputComponent.h"
@@ -34,12 +36,17 @@ void UEchoHUDPresenterComponent::BeginPlay()
 			return;
 		}
 	}
+	if (UEchoGameInstance* GameInstance = GetWorld() ? GetWorld()->GetGameInstance<UEchoGameInstance>() : nullptr)
+	{
+		GameInstance->ApplyUserSettings(false);
+	}
 
 	CreateHUD();
 	CreateCrosshairWidget();
 	CreateMiniMapWidget();
 	CreateLargeMapWidget();
 	BindLargeMapInput();
+	BindPauseMenuInput();
 
 	if (AActor* Owner = GetOwner())
 	{
@@ -224,6 +231,43 @@ void UEchoHUDPresenterComponent::BindLargeMapInput()
 
 	PlayerController->InputComponent->BindKey(EKeys::Tab, IE_Pressed, this, &UEchoHUDPresenterComponent::ShowLargeMapPressed);
 	PlayerController->InputComponent->BindKey(EKeys::Tab, IE_Released, this, &UEchoHUDPresenterComponent::ShowLargeMapReleased);
+}
+
+void UEchoHUDPresenterComponent::BindPauseMenuInput()
+{
+	APlayerController* PlayerController = UGameplayStatics::GetPlayerController(this, 0);
+	if (PlayerController && PlayerController->InputComponent)
+	{
+		PlayerController->InputComponent->BindKey(EKeys::Escape, IE_Pressed, this, &UEchoHUDPresenterComponent::TogglePauseMenu);
+	}
+}
+
+void UEchoHUDPresenterComponent::TogglePauseMenu()
+{
+	APlayerController* PlayerController = UGameplayStatics::GetPlayerController(this, 0);
+	if (!PlayerController) return;
+	if (PauseMenuWidget && PauseMenuWidget->IsInViewport()) { ClosePauseMenu(); return; }
+	if (!PauseMenuWidget)
+	{
+		PauseMenuWidget = CreateWidget<UEchoPauseMenuWidget>(PlayerController, UEchoPauseMenuWidget::StaticClass());
+		if (PauseMenuWidget) PauseMenuWidget->OnResumeRequested.AddDynamic(this, &UEchoHUDPresenterComponent::ClosePauseMenu);
+	}
+	if (!PauseMenuWidget) return;
+	PauseMenuWidget->AddToViewport(100);
+	FInputModeGameAndUI InputMode; InputMode.SetWidgetToFocus(PauseMenuWidget->TakeWidget()); InputMode.SetLockMouseToViewportBehavior(EMouseLockMode::DoNotLock);
+	PlayerController->SetInputMode(InputMode); PlayerController->bShowMouseCursor = true; PlayerController->SetIgnoreLookInput(true); PlayerController->SetIgnoreMoveInput(true);
+	if (CrosshairWidget) CrosshairWidget->SetVisibility(ESlateVisibility::Hidden);
+}
+
+void UEchoHUDPresenterComponent::ClosePauseMenu()
+{
+	APlayerController* PlayerController = UGameplayStatics::GetPlayerController(this, 0);
+	if (PauseMenuWidget) PauseMenuWidget->RemoveFromParent();
+	if (PlayerController)
+	{
+		PlayerController->SetInputMode(FInputModeGameOnly()); PlayerController->bShowMouseCursor = false; PlayerController->ResetIgnoreLookInput(); PlayerController->ResetIgnoreMoveInput();
+	}
+	if (CrosshairWidget) CrosshairWidget->SetVisibility(ESlateVisibility::HitTestInvisible);
 }
 
 void UEchoHUDPresenterComponent::ShowLargeMapPressed()

@@ -5,6 +5,7 @@
 #include "EchoCombatComponent.h"
 #include "EchoDeathmatchGameState.h"
 #include "EchoPlayerState.h"
+#include "EchoSkillComponent.h"
 #include "GameFramework/Controller.h"
 #include "GameFramework/Pawn.h"
 #include "TimerManager.h"
@@ -19,11 +20,18 @@ void AEchoDeathmatchGameMode::PostLogin(APlayerController* NewPlayer)
 {
 	Super::PostLogin(NewPlayer);
 	AssignPlayerIdentity(NewPlayer);
+	ApplySelectedSkillToPawn(NewPlayer);
 
 	if (AEchoDeathmatchGameState* EchoGameState = GetGameState<AEchoDeathmatchGameState>())
 	{
 		EchoGameState->KillTarget = KillTarget;
 	}
+}
+
+void AEchoDeathmatchGameMode::RestartPlayer(AController* NewPlayer)
+{
+	Super::RestartPlayer(NewPlayer);
+	ApplySelectedSkillToPawn(NewPlayer);
 }
 
 void AEchoDeathmatchGameMode::HandlePlayerKilled(AActor* VictimActor, AController* KillerController)
@@ -81,6 +89,17 @@ void AEchoDeathmatchGameMode::AssignPlayerIdentity(APlayerController* PlayerCont
 	const int32 AssignedNumber = NextPlayerNumber++;
 	const int32 ColorIndex = (AssignedNumber - 1) % UE_ARRAY_COUNT(PlayerColors);
 	EchoPlayerState->SetEchoIdentity(AssignedNumber, PlayerColors[ColorIndex]);
+}
+
+void AEchoDeathmatchGameMode::ApplySelectedSkillToPawn(AController* Controller) const
+{
+	const AEchoPlayerState* EchoPlayerState = Controller ? Controller->GetPlayerState<AEchoPlayerState>() : nullptr;
+	APawn* Pawn = Controller ? Controller->GetPawn() : nullptr;
+	UEchoSkillComponent* SkillComponent = Pawn ? Pawn->FindComponentByClass<UEchoSkillComponent>() : nullptr;
+	if (EchoPlayerState && SkillComponent)
+	{
+		SkillComponent->SkillType = EchoPlayerState->SelectedSkill;
+	}
 }
 
 void AEchoDeathmatchGameMode::FinishMatch(AEchoPlayerState* Winner)

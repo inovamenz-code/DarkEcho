@@ -21,6 +21,7 @@ public:
 
 	virtual void BeginPlay() override;
 	virtual void Tick(float DeltaSeconds) override;
+	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
 
 	UFUNCTION(BlueprintCallable, Category = "Echo|Decoy")
 	void InitializeDecoy(AController* InInstigatorController, AActor* InSourceActor);
@@ -64,6 +65,9 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Echo|Decoy", meta = (ClampMin = "1.0"))
 	float NoiseWaveRadius = 1100.0f;
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Echo|Decoy|Audio", meta = (ClampMin = "0.0", ClampMax = "1.0"))
+	float DecoyFootstepLoudness = 0.55f;
+
 protected:
 	UFUNCTION()
 	void HandleOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComponent, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
@@ -72,10 +76,13 @@ protected:
 	void HandleDeathStateChanged(bool bDead);
 
 private:
-	void EmitNoiseWave();
+	void EmitFakeFootstep(FVector Origin);
 	void TriggerDecoy(AActor* TriggeringActor);
 
-	UPROPERTY()
+	UFUNCTION(NetMulticast, Unreliable)
+	void MulticastEmitFakeFootstep(FVector_NetQuantize Origin);
+
+	UPROPERTY(Replicated)
 	TObjectPtr<AActor> SourceActor = nullptr;
 
 	UPROPERTY()

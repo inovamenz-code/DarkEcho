@@ -19,6 +19,7 @@ public:
 	AEchoDeathmatchGameMode();
 
 	virtual void PostLogin(APlayerController* NewPlayer) override;
+	virtual void RestartPlayer(AController* NewPlayer) override;
 
 	UFUNCTION(BlueprintCallable, Category = "Echo|Deathmatch")
 	void HandlePlayerKilled(AActor* VictimActor, AController* KillerController);
@@ -37,6 +38,7 @@ public:
 
 private:
 	void AssignPlayerIdentity(APlayerController* PlayerController);
+	void ApplySelectedSkillToPawn(AController* Controller) const;
 	void FinishMatch(AEchoPlayerState* Winner);
 	void ScheduleRespawn(AController* VictimController, APawn* VictimPawn);
 	void RespawnPlayer(AController* VictimController, APawn* OldPawn);

@@ -1,13 +1,31 @@
 Event	ID	Name			Wwise Object Path	Notes
 	170202313	Play_Weapon_Standard_Fire			\Default Work Unit\Play_Weapon_Standard_Fire	
+	183375431	Play_Scan_Pulse			\Default Work Unit\Play_Scan_Pulse	
 	620949748	Play_Weapon_Rapid_Fire			\Default Work Unit\Play_Weapon_Rapid_Fire	
+	1172822028	Play_Death			\Default Work Unit\Play_Death	
 	1317724945	Play_Weapon_Snipe_Fire			\Default Work Unit\Play_Weapon_Snipe_Fire	
 	1698210093	Play_Move_Normal			\Default Work Unit\Play_Move_Normal	
+	1864892471	Play_Player_Hit			\Default Work Unit\Play_Player_Hit	
 	1981685848	Play_Move_Sprint			\Default Work Unit\Play_Move_Sprint	
+	2572788460	Play_Projectile_Impact			\Default Work Unit\Play_Projectile_Impact	
 	3824681503	Play_Move_Silent			\Default Work Unit\Play_Move_Silent	
+	4224864163	Play_Decoy_Footstep			\Default Work Unit\Play_Decoy_Footstep	
+
+Audio Bus	ID	Name			Wwise Object Path	Notes
+	1281534399	Reverb_Reflection			\Default Work Unit\Main Audio Bus\Reverb_Reflection	
+
+Auxiliary Bus	ID	Name			Wwise Object Path	Notes
+	2219666210	RVB_Atrium			\Default Work Unit\Main Audio Bus\Reverb_Reflection\RVB_Atrium	
+
+Effect plug-ins	ID	Name	Type				Notes
+	470205082	Wwise_RoomVerb_(Custom)	Wwise RoomVerb			
 
 In Memory Audio	ID	Name	Audio source file		Wwise Object Path	Notes	Data Size
-	237410838	Snipe	.cache\3A\{3A67986A-7A0E-17EE-D2CD-8925DD91DE58}.wem		\Containers\Default Work Unit\Snipe		197596
-	825503811	SFX_Echo_Test_Beep	.cache\27\{27F02B6F-224D-8D67-2372-E3E67D446710}.wem		\Containers\Default Work Unit\SFX_Echo_Test_Beep		76888
+	123335188	Scan_Default	.cache\D4\{D49FAC1E-3B7C-99DC-62EF-EDE3B27BB73B}.wem		\Containers\Default Work Unit\Scan_Default		408096
+	237410838	RapidShoot	.cache\3A\{3A67986A-7A0E-17EE-D2CD-8925DD91DE58}.wem		\Containers\Default Work Unit\RapidShoot		197596
+	638952218	SFX_Move_BallRollSilent	.cache\AB\{AB473151-FF83-D5F0-BDF8-5F9C7C5434D0}.wem		\Containers\Default Work Unit\SFX_Move_BallRollSilent		1428576
+	687552056	Snipesci-fi-weapon-laser-shot-04-316416	.cache\DA\{DA8DEA76-9A13-E54D-8A1D-6AE85001CB9E}.wem		\Containers\Default Work Unit\Snipesci-fi-weapon-laser-shot-04-316416		304224
+	825503811	Play_Decoy_Footstep	.cache\27\{27F02B6F-224D-8D67-2372-E3E67D446710}.wem		\Containers\Default Work Unit\Play_Decoy_Footstep		76888
+	851907246	projectile_impact_placeholder_01	.cache\45\{45D95393-A2C2-6B08-9440-2DB29F86915C}.wem		\Containers\Default Work Unit\projectile_impact_placeholder_01		96096
 	1045975195	SFX_Move_BallRoll	.cache\60\{600BD48D-6C0D-EF3B-E684-FFAB1667B483}.wem		\Containers\Default Work Unit\SFX_Move_BallRoll		394360
 

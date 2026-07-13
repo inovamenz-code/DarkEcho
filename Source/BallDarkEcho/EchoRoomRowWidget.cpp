@@ -9,23 +9,23 @@ namespace
 {
 	FText GetRoomMapDisplayName(const FString& MapKey)
 	{
-		if (MapKey == TEXT("LeveL1"))
+		if (MapKey == TEXT("level1") || MapKey == TEXT("LeveL1"))
 		{
-			return FText::FromString(TEXT("LeveL1"));
+			return FText::FromString(TEXT("level1"));
 		}
-		if (MapKey == TEXT("Level2"))
+		if (MapKey == TEXT("level2") || MapKey == TEXT("Level2"))
 		{
-			return FText::FromString(TEXT("Level2"));
+			return FText::FromString(TEXT("level2"));
 		}
-		if (MapKey == TEXT("level-Test"))
+		if (MapKey == TEXT("tian") || MapKey == TEXT("level-Test"))
 		{
-			return FText::FromString(TEXT("level-Test / Tian"));
+			return FText::FromString(TEXT("tian / DM Tian"));
 		}
-		if (MapKey == TEXT("battle2"))
+		if (MapKey == TEXT("battle2") || MapKey == TEXT("battle1"))
 		{
-			return FText::FromString(TEXT("battle2 / Delta Admin"));
+			return FText::FromString(TEXT("BattleMap / Delta Admin"));
 		}
-		return FText::FromString(TEXT("battle1 / Echo Atrium"));
+		return FText::FromString(TEXT("level1"));
 	}
 }
 

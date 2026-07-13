@@ -5,6 +5,7 @@
 #include "Blueprint/WidgetTree.h"
 #include "Components/Border.h"
 #include "Components/Button.h"
+#include "Components/CheckBox.h"
 #include "Components/EditableTextBox.h"
 #include "Components/HorizontalBox.h"
 #include "Components/HorizontalBoxSlot.h"
@@ -76,34 +77,47 @@ namespace
 
 	bool IsBattleMapKey(const FString& MapKey)
 	{
-		return MapKey == TEXT("level-Test") || MapKey == TEXT("battle1") || MapKey == TEXT("battle2");
+		return MapKey == TEXT("level1") || MapKey == TEXT("tian") || MapKey == TEXT("battle2");
 	}
 
 	FText GetMapDisplayName(const FString& MapKey)
 	{
-		if (MapKey == TEXT("LeveL1"))
+		if (MapKey == TEXT("level1") || MapKey == TEXT("LeveL1"))
 		{
-			return FText::FromString(TEXT("LeveL1"));
+			return FText::FromString(TEXT("Level1"));
 		}
-		if (MapKey == TEXT("Level2"))
+		if (MapKey == TEXT("tian") || MapKey == TEXT("level-Test"))
 		{
-			return FText::FromString(TEXT("Level2"));
+			return FText::FromString(TEXT("Train"));
 		}
-		if (MapKey == TEXT("level-Test"))
+		if (MapKey == TEXT("battle2") || MapKey == TEXT("battle1"))
 		{
-			return FText::FromString(TEXT("level-Test / Tian"));
+			return FText::FromString(TEXT("BattleMap"));
 		}
-		if (MapKey == TEXT("battle2"))
+		return FText::FromString(TEXT("Level1"));
+	}
+
+	FText GetSkillDisplayName(EEchoCharacterSkill Skill)
+	{
+		switch (Skill)
 		{
-			return FText::FromString(TEXT("battle2 / Delta Admin"));
+		case EEchoCharacterSkill::NoiseDecoy:
+			return FText::FromString(TEXT("Noise Decoy"));
+		case EEchoCharacterSkill::ResonanceBeam:
+			return FText::FromString(TEXT("Resonance Beam"));
+		case EEchoCharacterSkill::StealthRun:
+			return FText::FromString(TEXT("Stealth Run"));
+		case EEchoCharacterSkill::WideEchoScan:
+		default:
+			return FText::FromString(TEXT("Wide Echo Scan"));
 		}
-		return FText::FromString(TEXT("battle1 / Echo Atrium"));
 	}
 }
 
 UEchoMainMenuWidget::UEchoMainMenuWidget(const FObjectInitializer& ObjectInitializer)
 	: Super(ObjectInitializer)
 {
+	SetIsFocusable(true);
 }
 
 TSharedRef<SWidget> UEchoMainMenuWidget::RebuildWidget()
@@ -120,10 +134,16 @@ TSharedRef<SWidget> UEchoMainMenuWidget::RebuildWidget()
 void UEchoMainMenuWidget::NativeConstruct()
 {
 	Super::NativeConstruct();
+	if (UEchoGameInstance* EchoGameInstance = GetGameInstance<UEchoGameInstance>())
+	{
+		SfxVolume = EchoGameInstance->GetSfxVolume();
+		MusicVolume = EchoGameInstance->GetMusicVolume();
+	}
 	BindGameInstanceDelegates();
 	BindDesignedWidgetEvents();
 	ApplyInputTextStyle(Input_PlayerId);
 	ApplyInputTextStyle(Input_RoomName);
+	ApplyInputTextStyle(Input_DirectAddress);
 
 	if (UEchoGameInstance* EchoGameInstance = GetGameInstance<UEchoGameInstance>())
 	{
@@ -269,6 +289,10 @@ bool UEchoMainMenuWidget::IsLevel3Available() const
 void UEchoMainMenuWidget::SetSfxVolume(float Volume)
 {
 	SfxVolume = FMath::Clamp(Volume, 0.0f, 1.0f);
+	if (UEchoGameInstance* EchoGameInstance = GetGameInstance<UEchoGameInstance>())
+	{
+		EchoGameInstance->SetSfxVolume(SfxVolume);
+	}
 	RefreshVolumeLabels();
 	OnSfxVolumeChanged(SfxVolume);
 }
@@ -276,6 +300,10 @@ void UEchoMainMenuWidget::SetSfxVolume(float Volume)
 void UEchoMainMenuWidget::SetMusicVolume(float Volume)
 {
 	MusicVolume = FMath::Clamp(Volume, 0.0f, 1.0f);
+	if (UEchoGameInstance* EchoGameInstance = GetGameInstance<UEchoGameInstance>())
+	{
+		EchoGameInstance->SetMusicVolume(MusicVolume);
+	}
 	RefreshVolumeLabels();
 	OnMusicVolumeChanged(MusicVolume);
 }
@@ -336,6 +364,22 @@ void UEchoMainMenuWidget::HandleRefreshRooms()
 	}
 }
 
+void UEchoMainMenuWidget::HandleDirectConnect()
+{
+	UEditableTextBox* DirectInput = Input_DirectAddress ? Input_DirectAddress.Get() : GeneratedDirectAddressInput.Get();
+	FString Address = DirectInput ? DirectInput->GetText().ToString().TrimStartAndEnd() : FString();
+	if (Address.IsEmpty())
+	{
+		Address = TEXT("127.0.0.1:7777");
+	}
+
+	SetGeneratedStatus(FText::Format(FText::FromString(TEXT("Connecting to {0}...")), FText::FromString(Address)));
+	if (UEchoGameInstance* EchoGameInstance = GetGameInstance<UEchoGameInstance>())
+	{
+		EchoGameInstance->JoinDirectLanRoom(Address);
+	}
+}
+
 void UEchoMainMenuWidget::HandleCreateRoom()
 {
 	UEchoGameInstance* EchoGameInstance = GetGameInstance<UEchoGameInstance>();
@@ -354,7 +398,7 @@ void UEchoMainMenuWidget::HandleCreateRoom()
 
 	EchoGameInstance->SetLastRoomName(RoomName);
 	SetGeneratedStatus(FText::FromString(TEXT("Creating LAN room...")));
-	EchoGameInstance->CreateLanRoom(RoomName, TEXT("battle1"), 4);
+	EchoGameInstance->CreateLanRoom(RoomName, TEXT("level1"), 4);
 }
 
 void UEchoMainMenuWidget::HandleLeaveRoom()
@@ -408,29 +452,54 @@ void UEchoMainMenuWidget::HandleMaxPlayersUp()
 	}
 }
 
+void UEchoMainMenuWidget::HandleSelectSkillWideEchoScan()
+{
+	SelectLocalSkill(EEchoCharacterSkill::WideEchoScan);
+}
+
+void UEchoMainMenuWidget::HandleSelectSkillNoiseDecoy()
+{
+	SelectLocalSkill(EEchoCharacterSkill::NoiseDecoy);
+}
+
+void UEchoMainMenuWidget::HandleSelectSkillResonanceBeam()
+{
+	SelectLocalSkill(EEchoCharacterSkill::ResonanceBeam);
+}
+
+void UEchoMainMenuWidget::HandleSelectSkillStealthRun()
+{
+	SelectLocalSkill(EEchoCharacterSkill::StealthRun);
+}
+
 void UEchoMainMenuWidget::HandleSelectMapLevel1()
 {
-	SelectLobbyMap(TEXT("LeveL1"));
+	SelectLobbyMap(TEXT("level1"));
 }
 
 void UEchoMainMenuWidget::HandleSelectMapLevel2()
 {
-	SelectLobbyMap(TEXT("Level2"));
+	SelectLobbyMap(TEXT("level2"));
 }
 
 void UEchoMainMenuWidget::HandleSelectMapLevelTest()
 {
-	SelectLobbyMap(TEXT("level-Test"));
+	SelectLobbyMap(TEXT("tian"));
 }
 
 void UEchoMainMenuWidget::HandleSelectMapBattle1()
 {
-	SelectLobbyMap(TEXT("battle1"));
+	SelectLobbyMap(TEXT("battle2"));
 }
 
 void UEchoMainMenuWidget::HandleSelectMapBattle2()
 {
 	SelectLobbyMap(TEXT("battle2"));
+}
+
+void UEchoMainMenuWidget::HandleSelectMapBattle3()
+{
+	SelectLobbyMap(TEXT("level1"));
 }
 
 void UEchoMainMenuWidget::HandleJoinRoom0() { JoinCachedRoom(0); }
@@ -461,6 +530,39 @@ void UEchoMainMenuWidget::HandleMusicVolumeChanged(float Volume)
 	SetMusicVolume(Volume);
 }
 
+void UEchoMainMenuWidget::HandleMasterVolumeChanged(float Volume)
+{
+	if (UEchoGameInstance* GI = GetGameInstance<UEchoGameInstance>()) GI->SetMasterVolume(Volume);
+	RefreshVolumeLabels();
+}
+
+void UEchoMainMenuWidget::HandleSensitivityChanged(float Value)
+{
+	if (UEchoGameInstance* GI = GetGameInstance<UEchoGameInstance>()) GI->SetMouseSensitivity(0.1f + FMath::Clamp(Value, 0.0f, 1.0f) * 2.9f);
+	RefreshVolumeLabels();
+}
+
+void UEchoMainMenuWidget::HandleVSyncChanged(bool bChecked)
+{
+	if (UEchoGameInstance* GI = GetGameInstance<UEchoGameInstance>()) GI->SetVSyncEnabled(bChecked);
+}
+
+void UEchoMainMenuWidget::HandleResetSettings()
+{
+	if (UEchoGameInstance* GI = GetGameInstance<UEchoGameInstance>())
+	{
+		GI->ResetUserSettingsToDefaults();
+		SfxVolume = GI->GetSfxVolume();
+		MusicVolume = GI->GetMusicVolume();
+	}
+	RefreshVolumeLabels();
+}
+
+void UEchoMainMenuWidget::HandleResolutionClicked() { if (UEchoGameInstance* GI = GetGameInstance<UEchoGameInstance>()) GI->CycleResolution(); RefreshVolumeLabels(); }
+void UEchoMainMenuWidget::HandleWindowModeClicked() { if (UEchoGameInstance* GI = GetGameInstance<UEchoGameInstance>()) GI->CycleWindowMode(); RefreshVolumeLabels(); }
+void UEchoMainMenuWidget::HandleQualityClicked() { if (UEchoGameInstance* GI = GetGameInstance<UEchoGameInstance>()) GI->CycleOverallQuality(); RefreshVolumeLabels(); }
+void UEchoMainMenuWidget::HandleFrameRateClicked() { if (UEchoGameInstance* GI = GetGameInstance<UEchoGameInstance>()) GI->CycleFrameRateLimit(); RefreshVolumeLabels(); }
+
 void UEchoMainMenuWidget::HandleLanRoomsUpdated()
 {
 	if (ActiveScreen == EEchoMenuScreen::RoomList)
@@ -482,14 +584,27 @@ void UEchoMainMenuWidget::BindDesignedWidgetEvents()
 	if (Button_OpenRoomList) { Button_OpenRoomList->OnClicked.RemoveDynamic(this, &UEchoMainMenuWidget::HandleOpenRoomList); Button_OpenRoomList->OnClicked.AddDynamic(this, &UEchoMainMenuWidget::HandleOpenRoomList); }
 	if (Button_BackToMode) { Button_BackToMode->OnClicked.RemoveDynamic(this, &UEchoMainMenuWidget::HandleBackToModeSelect); Button_BackToMode->OnClicked.AddDynamic(this, &UEchoMainMenuWidget::HandleBackToModeSelect); }
 	if (Button_RefreshRooms) { Button_RefreshRooms->OnClicked.RemoveDynamic(this, &UEchoMainMenuWidget::HandleRefreshRooms); Button_RefreshRooms->OnClicked.AddDynamic(this, &UEchoMainMenuWidget::HandleRefreshRooms); }
+	if (Button_DirectConnect) { Button_DirectConnect->OnClicked.RemoveDynamic(this, &UEchoMainMenuWidget::HandleDirectConnect); Button_DirectConnect->OnClicked.AddDynamic(this, &UEchoMainMenuWidget::HandleDirectConnect); }
 	if (Button_CreateRoom) { Button_CreateRoom->OnClicked.RemoveDynamic(this, &UEchoMainMenuWidget::HandleCreateRoom); Button_CreateRoom->OnClicked.AddDynamic(this, &UEchoMainMenuWidget::HandleCreateRoom); }
 	if (Button_MapLevel1) { Button_MapLevel1->OnClicked.RemoveDynamic(this, &UEchoMainMenuWidget::HandleSelectMapLevel1); Button_MapLevel1->OnClicked.AddDynamic(this, &UEchoMainMenuWidget::HandleSelectMapLevel1); }
-	if (Button_MapLevel2) { Button_MapLevel2->OnClicked.RemoveDynamic(this, &UEchoMainMenuWidget::HandleSelectMapLevel2); Button_MapLevel2->OnClicked.AddDynamic(this, &UEchoMainMenuWidget::HandleSelectMapLevel2); }
+	if (Button_MapLevel2) { Button_MapLevel2->SetVisibility(ESlateVisibility::Collapsed); }
 	if (Button_MapLevelTest) { Button_MapLevelTest->OnClicked.RemoveDynamic(this, &UEchoMainMenuWidget::HandleSelectMapLevelTest); Button_MapLevelTest->OnClicked.AddDynamic(this, &UEchoMainMenuWidget::HandleSelectMapLevelTest); }
-	if (Button_MapBattle1) { Button_MapBattle1->OnClicked.RemoveDynamic(this, &UEchoMainMenuWidget::HandleSelectMapBattle1); Button_MapBattle1->OnClicked.AddDynamic(this, &UEchoMainMenuWidget::HandleSelectMapBattle1); }
-	if (Button_MapBattle2) { Button_MapBattle2->OnClicked.RemoveDynamic(this, &UEchoMainMenuWidget::HandleSelectMapBattle2); Button_MapBattle2->OnClicked.AddDynamic(this, &UEchoMainMenuWidget::HandleSelectMapBattle2); }
+	if (Button_MapBattle1)
+	{
+		Button_MapBattle1->OnClicked.RemoveDynamic(this, &UEchoMainMenuWidget::HandleSelectMapBattle1);
+		Button_MapBattle1->OnClicked.AddDynamic(this, &UEchoMainMenuWidget::HandleSelectMapBattle1);
+		if (UTextBlock* Label = Cast<UTextBlock>(Button_MapBattle1->GetContent()))
+		{
+			Label->SetText(FText::FromString(TEXT("BattleMap")));
+		}
+	}
+	if (Button_MapBattle2) { Button_MapBattle2->SetVisibility(ESlateVisibility::Collapsed); }
 	if (Button_MaxPlayersDown) { Button_MaxPlayersDown->OnClicked.RemoveDynamic(this, &UEchoMainMenuWidget::HandleMaxPlayersDown); Button_MaxPlayersDown->OnClicked.AddDynamic(this, &UEchoMainMenuWidget::HandleMaxPlayersDown); }
 	if (Button_MaxPlayersUp) { Button_MaxPlayersUp->OnClicked.RemoveDynamic(this, &UEchoMainMenuWidget::HandleMaxPlayersUp); Button_MaxPlayersUp->OnClicked.AddDynamic(this, &UEchoMainMenuWidget::HandleMaxPlayersUp); }
+	if (Button_SkillWideEchoScan) { Button_SkillWideEchoScan->OnClicked.RemoveDynamic(this, &UEchoMainMenuWidget::HandleSelectSkillWideEchoScan); Button_SkillWideEchoScan->OnClicked.AddDynamic(this, &UEchoMainMenuWidget::HandleSelectSkillWideEchoScan); }
+	if (Button_SkillNoiseDecoy) { Button_SkillNoiseDecoy->OnClicked.RemoveDynamic(this, &UEchoMainMenuWidget::HandleSelectSkillNoiseDecoy); Button_SkillNoiseDecoy->OnClicked.AddDynamic(this, &UEchoMainMenuWidget::HandleSelectSkillNoiseDecoy); }
+	if (Button_SkillResonanceBeam) { Button_SkillResonanceBeam->OnClicked.RemoveDynamic(this, &UEchoMainMenuWidget::HandleSelectSkillResonanceBeam); Button_SkillResonanceBeam->OnClicked.AddDynamic(this, &UEchoMainMenuWidget::HandleSelectSkillResonanceBeam); }
+	if (Button_SkillStealthRun) { Button_SkillStealthRun->OnClicked.RemoveDynamic(this, &UEchoMainMenuWidget::HandleSelectSkillStealthRun); Button_SkillStealthRun->OnClicked.AddDynamic(this, &UEchoMainMenuWidget::HandleSelectSkillStealthRun); }
 	if (Button_HostStart) { Button_HostStart->OnClicked.RemoveDynamic(this, &UEchoMainMenuWidget::HandleHostStart); Button_HostStart->OnClicked.AddDynamic(this, &UEchoMainMenuWidget::HandleHostStart); }
 	if (Button_Ready) { Button_Ready->OnClicked.RemoveDynamic(this, &UEchoMainMenuWidget::HandleReadyToggle); Button_Ready->OnClicked.AddDynamic(this, &UEchoMainMenuWidget::HandleReadyToggle); }
 	if (Button_LeaveRoom) { Button_LeaveRoom->OnClicked.RemoveDynamic(this, &UEchoMainMenuWidget::HandleLeaveRoom); Button_LeaveRoom->OnClicked.AddDynamic(this, &UEchoMainMenuWidget::HandleLeaveRoom); }
@@ -606,7 +721,7 @@ void UEchoMainMenuWidget::AddRoomRow(const FEchoLanRoomInfo& RoomInfo)
 	List_RoomRows->AddChild(FallbackRow);
 }
 
-void UEchoMainMenuWidget::AddPlayerRow(const FString& DisplayPlayerId, bool bReady, bool bIsHost)
+void UEchoMainMenuWidget::AddPlayerRow(const FString& DisplayPlayerId, bool bReady, bool bIsHost, EEchoCharacterSkill SelectedSkill)
 {
 	if (!List_PlayerRows)
 	{
@@ -623,7 +738,7 @@ void UEchoMainMenuWidget::AddPlayerRow(const FString& DisplayPlayerId, bool bRea
 	{
 		if (UEchoLobbyPlayerRowWidget* PlayerRow = CreateWidget<UEchoLobbyPlayerRowWidget>(GetOwningPlayer(), EffectivePlayerRowWidgetClass))
 		{
-			PlayerRow->SetupPlayer(DisplayPlayerId, bReady, bIsHost);
+			PlayerRow->SetupPlayer(DisplayPlayerId, bReady, bIsHost, SelectedSkill);
 			List_PlayerRows->AddChild(PlayerRow);
 			return;
 		}
@@ -632,7 +747,7 @@ void UEchoMainMenuWidget::AddPlayerRow(const FString& DisplayPlayerId, bool bRea
 	const FString StateText = bIsHost ? TEXT("HOST") : (bReady ? TEXT("READY") : TEXT("WAITING"));
 	List_PlayerRows->AddChild(CreateMenuText(
 		FName(*FString::Printf(TEXT("Fallback_PlayerRow_%s"), *DisplayPlayerId)),
-		FText::FromString(FString::Printf(TEXT("%s  -  %s"), *DisplayPlayerId, *StateText)),
+		FText::FromString(FString::Printf(TEXT("%s  -  %s  -  %s"), *DisplayPlayerId, *StateText, *GetSkillDisplayName(SelectedSkill).ToString())),
 		18.0f,
 		bReady || bIsHost ? EchoCyan : EchoMuted));
 }
@@ -896,8 +1011,16 @@ void UEchoMainMenuWidget::ShowRoomListScreen()
 	UButton* CreateButton = CreateMenuButton(TEXT("Generated_CreateRoomButton"), FText::FromString(TEXT("CREATE")), true);
 	CreateButton->OnClicked.AddDynamic(this, &UEchoMainMenuWidget::HandleCreateRoom);
 	CreateStack->AddChildToVerticalBox(CreateButton);
+
+	CreateStack->AddChildToVerticalBox(CreateMenuText(TEXT("Generated_DirectConnectTitle"), FText::FromString(TEXT("DIRECT IP")), 22.0f, EchoWhite))->SetPadding(FMargin(0.0f, 24.0f, 0.0f, 10.0f));
+	GeneratedDirectAddressInput = CreateTextInput(TEXT("Generated_DirectAddressInput"), FText::FromString(TEXT("127.0.0.1:7777")), FText::FromString(TEXT("127.0.0.1:7777")));
+	CreateStack->AddChildToVerticalBox(GeneratedDirectAddressInput)->SetPadding(FMargin(0.0f, 0.0f, 0.0f, 12.0f));
+	UButton* DirectButton = CreateMenuButton(TEXT("Generated_DirectConnectButton"), FText::FromString(TEXT("CONNECT IP")));
+	DirectButton->OnClicked.AddDynamic(this, &UEchoMainMenuWidget::HandleDirectConnect);
+	CreateStack->AddChildToVerticalBox(DirectButton);
+
 	CreateStack->AddChildToVerticalBox(WidgetTree->ConstructWidget<USpacer>(USpacer::StaticClass(), TEXT("Generated_CreateRoomSpacer")))->SetSize(MakeSlotSize(ESlateSizeRule::Fill));
-	UButton* RefreshButton = CreateMenuButton(TEXT("Generated_RefreshRoomsButton"), FText::FromString(TEXT("REFRESH")));
+	UButton* RefreshButton = CreateMenuButton(TEXT("Generated_RefreshRoomsButton"), FText::FromString(TEXT("REFRESH LAN / DIRECT IP")));
 	RefreshButton->OnClicked.AddDynamic(this, &UEchoMainMenuWidget::HandleRefreshRooms);
 	CreateStack->AddChildToVerticalBox(RefreshButton);
 	Body->AddChildToHorizontalBox(CreatePanel)->SetSize(MakeSlotSize(ESlateSizeRule::Automatic, 0.42f));
@@ -948,6 +1071,9 @@ void UEchoMainMenuWidget::RefreshRoomRows()
 		if (Rooms.Num() == 0)
 		{
 			List_RoomRows->AddChild(CreateMenuText(TEXT("Designed_NoRooms"), FText::FromString(TEXT("No LAN rooms found.")), 18.0f, EchoMuted, ETextJustify::Center));
+			UButton* DirectButton = CreateMenuButton(TEXT("Designed_DirectConnectLocalhost"), FText::FromString(TEXT("CONNECT 127.0.0.1:7777")));
+			DirectButton->OnClicked.AddDynamic(this, &UEchoMainMenuWidget::HandleDirectConnect);
+			List_RoomRows->AddChild(DirectButton);
 			SetGeneratedStatus(EchoGameInstance->GetLastLanError().IsEmpty() ? FText::FromString(TEXT("Refresh to search LAN rooms.")) : FText::FromString(EchoGameInstance->GetLastLanError()));
 			return;
 		}
@@ -971,10 +1097,17 @@ void UEchoMainMenuWidget::RefreshRoomRows()
 	const TArray<FEchoLanRoomInfo>* RoomsPtr = EchoGameInstance ? &EchoGameInstance->GetCachedRooms() : nullptr;
 	const int32 RoomCount = RoomsPtr ? RoomsPtr->Num() : 0;
 
+	if (EchoGameInstance && EchoGameInstance->IsSearchingLanRooms())
+	{
+		GeneratedRoomRows->AddChildToVerticalBox(CreateMenuText(TEXT("Generated_SearchingRooms"), FText::FromString(TEXT("Searching...")), 18.0f, EchoMuted, ETextJustify::Center));
+		SetGeneratedStatus(FText::FromString(TEXT("Searching LAN rooms...")));
+		return;
+	}
+
 	if (RoomCount == 0)
 	{
 		GeneratedRoomRows->AddChildToVerticalBox(CreateMenuText(TEXT("Generated_NoRooms"), FText::FromString(TEXT("No LAN rooms found.")), 18.0f, EchoMuted, ETextJustify::Center));
-		SetGeneratedStatus(FText::FromString(TEXT("Create a room or refresh again.")));
+		SetGeneratedStatus(EchoGameInstance && !EchoGameInstance->GetLastLanError().IsEmpty() ? FText::FromString(EchoGameInstance->GetLastLanError()) : FText::FromString(TEXT("Create a room, refresh again, or connect by IP.")));
 		return;
 	}
 
@@ -1040,7 +1173,7 @@ void UEchoMainMenuWidget::RefreshInRoomScreen(bool bForceRefresh)
 			Text_RoomName->SetText(FText::FromString(LobbyGameState ? LobbyGameState->RoomName : TEXT("LAN Room")));
 		}
 
-		const FString SelectedMap = LobbyGameState ? LobbyGameState->SelectedMapKey : TEXT("battle1");
+		const FString SelectedMap = LobbyGameState ? LobbyGameState->SelectedMapKey : TEXT("level1");
 		if (Text_SelectedMap)
 		{
 			Text_SelectedMap->SetText(FText::Format(FText::FromString(TEXT("Map: {0}")), GetMapDisplayName(SelectedMap)));
@@ -1063,10 +1196,10 @@ void UEchoMainMenuWidget::RefreshInRoomScreen(bool bForceRefresh)
 
 		const bool bHostControlsEnabled = bIsHost;
 		if (Button_MapLevel1) { Button_MapLevel1->SetIsEnabled(bHostControlsEnabled); }
-		if (Button_MapLevel2) { Button_MapLevel2->SetIsEnabled(bHostControlsEnabled); }
+		if (Button_MapLevel2) { Button_MapLevel2->SetVisibility(ESlateVisibility::Collapsed); }
 		if (Button_MapLevelTest) { Button_MapLevelTest->SetIsEnabled(bHostControlsEnabled); }
-		if (Button_MapBattle1) { Button_MapBattle1->SetIsEnabled(bHostControlsEnabled); }
-		if (Button_MapBattle2) { Button_MapBattle2->SetIsEnabled(bHostControlsEnabled); }
+		if (Button_MapBattle1) { Button_MapBattle1->SetVisibility(ESlateVisibility::Visible); Button_MapBattle1->SetIsEnabled(bHostControlsEnabled); }
+		if (Button_MapBattle2) { Button_MapBattle2->SetVisibility(ESlateVisibility::Collapsed); }
 		if (Button_MaxPlayersDown) { Button_MaxPlayersDown->SetIsEnabled(bHostControlsEnabled); }
 		if (Button_MaxPlayersUp) { Button_MaxPlayersUp->SetIsEnabled(bHostControlsEnabled); }
 
@@ -1078,9 +1211,14 @@ void UEchoMainMenuWidget::RefreshInRoomScreen(bool bForceRefresh)
 				const AEchoPlayerState* EchoPlayerState = Cast<AEchoPlayerState>(PlayerState);
 				if (EchoPlayerState)
 				{
-					AddPlayerRow(EchoPlayerState->DisplayPlayerId, EchoPlayerState->bReady, EchoPlayerState->bIsHost);
+					AddPlayerRow(EchoPlayerState->DisplayPlayerId, EchoPlayerState->bReady, EchoPlayerState->bIsHost, EchoPlayerState->SelectedSkill);
 				}
 			}
+		}
+
+		if (Text_SelectedSkill)
+		{
+			Text_SelectedSkill->SetText(FText::Format(FText::FromString(TEXT("Skill: {0}")), LocalPlayerState ? GetSkillDisplayName(LocalPlayerState->SelectedSkill) : GetSkillDisplayName(EEchoCharacterSkill::WideEchoScan)));
 		}
 
 		if (Text_LobbyStatus)
@@ -1122,7 +1260,7 @@ void UEchoMainMenuWidget::RefreshInRoomScreen(bool bForceRefresh)
 			}
 
 			const FString StateText = EchoPlayerState->bIsHost ? TEXT("HOST") : (EchoPlayerState->bReady ? TEXT("READY") : TEXT("WAITING"));
-			const FString RowText = FString::Printf(TEXT("%s  -  %s"), *EchoPlayerState->DisplayPlayerId, *StateText);
+			const FString RowText = FString::Printf(TEXT("%s  -  %s  -  %s"), *EchoPlayerState->DisplayPlayerId, *StateText, *GetSkillDisplayName(EchoPlayerState->SelectedSkill).ToString());
 			PlayersStack->AddChildToVerticalBox(CreateMenuText(FName(*FString::Printf(TEXT("Generated_Player_%d"), PlayerState->GetPlayerId())), FText::FromString(RowText), 18.0f, EchoPlayerState->bReady ? EchoCyan : EchoMuted))->SetPadding(FMargin(0.0f, 0.0f, 0.0f, 10.0f));
 		}
 	}
@@ -1131,44 +1269,61 @@ void UEchoMainMenuWidget::RefreshInRoomScreen(bool bForceRefresh)
 	PlayersSlot->SetSize(MakeSlotSize(ESlateSizeRule::Fill));
 	PlayersSlot->SetPadding(FMargin(0.0f, 0.0f, 18.0f, 0.0f));
 
-	UBorder* SettingsPanel = WidgetTree->ConstructWidget<UBorder>(UBorder::StaticClass(), TEXT("Generated_RoomSettingsPanel"));
+	// Keep personal loadout choices separate from host-owned match settings.
+	UBorder* LoadoutPanel = WidgetTree->ConstructWidget<UBorder>(UBorder::StaticClass(), TEXT("Generated_LoadoutPanel"));
+	LoadoutPanel->SetBrushColor(EchoPanelSoft);
+	LoadoutPanel->SetPadding(FMargin(22.0f));
+	UVerticalBox* LoadoutStack = WidgetTree->ConstructWidget<UVerticalBox>(UVerticalBox::StaticClass(), TEXT("Generated_LoadoutStack"));
+	LoadoutPanel->SetContent(LoadoutStack);
+	LoadoutStack->AddChildToVerticalBox(CreateMenuText(TEXT("Generated_LoadoutTitle"), FText::FromString(TEXT("YOUR LOADOUT")), 27.0f, EchoWhite))->SetPadding(FMargin(0.0f, 0.0f, 0.0f, 6.0f));
+	LoadoutStack->AddChildToVerticalBox(CreateMenuText(TEXT("Generated_LoadoutHint"), FText::FromString(TEXT("Choose one character skill.")), 15.0f, EchoMuted))->SetPadding(FMargin(0.0f, 0.0f, 0.0f, 14.0f));
+
+	const EEchoCharacterSkill CurrentSkill = LocalPlayerState ? LocalPlayerState->SelectedSkill : EEchoCharacterSkill::WideEchoScan;
+	LoadoutStack->AddChildToVerticalBox(CreateMenuText(TEXT("Generated_SelectedSkill"), FText::Format(FText::FromString(TEXT("Selected: {0}")), GetSkillDisplayName(CurrentSkill)), 18.0f, EchoCyan))->SetPadding(FMargin(0.0f, 0.0f, 0.0f, 12.0f));
+
+	UButton* WideScanButton = CreateMenuButton(TEXT("Generated_Skill_WideEchoScan"), FText::FromString(TEXT("Wide Echo Scan")), CurrentSkill == EEchoCharacterSkill::WideEchoScan);
+	WideScanButton->OnClicked.AddDynamic(this, &UEchoMainMenuWidget::HandleSelectSkillWideEchoScan);
+	LoadoutStack->AddChildToVerticalBox(WideScanButton)->SetPadding(FMargin(0.0f, 0.0f, 0.0f, 8.0f));
+
+	UButton* DecoyButton = CreateMenuButton(TEXT("Generated_Skill_NoiseDecoy"), FText::FromString(TEXT("Noise Decoy")), CurrentSkill == EEchoCharacterSkill::NoiseDecoy);
+	DecoyButton->OnClicked.AddDynamic(this, &UEchoMainMenuWidget::HandleSelectSkillNoiseDecoy);
+	LoadoutStack->AddChildToVerticalBox(DecoyButton)->SetPadding(FMargin(0.0f, 0.0f, 0.0f, 8.0f));
+
+	UButton* BeamButton = CreateMenuButton(TEXT("Generated_Skill_ResonanceBeam"), FText::FromString(TEXT("Resonance Beam")), CurrentSkill == EEchoCharacterSkill::ResonanceBeam);
+	BeamButton->OnClicked.AddDynamic(this, &UEchoMainMenuWidget::HandleSelectSkillResonanceBeam);
+	LoadoutStack->AddChildToVerticalBox(BeamButton)->SetPadding(FMargin(0.0f, 0.0f, 0.0f, 8.0f));
+
+	UButton* StealthButton = CreateMenuButton(TEXT("Generated_Skill_StealthRun"), FText::FromString(TEXT("Stealth Run")), CurrentSkill == EEchoCharacterSkill::StealthRun);
+	StealthButton->OnClicked.AddDynamic(this, &UEchoMainMenuWidget::HandleSelectSkillStealthRun);
+	LoadoutStack->AddChildToVerticalBox(StealthButton)->SetPadding(FMargin(0.0f));
+	UHorizontalBoxSlot* LoadoutSlot = Body->AddChildToHorizontalBox(LoadoutPanel);
+	LoadoutSlot->SetSize(MakeSlotSize(ESlateSizeRule::Fill));
+	LoadoutSlot->SetPadding(FMargin(0.0f, 0.0f, 18.0f, 0.0f));
+
+	UBorder* SettingsPanel = WidgetTree->ConstructWidget<UBorder>(UBorder::StaticClass(), TEXT("Generated_MatchSettingsPanel"));
 	SettingsPanel->SetBrushColor(EchoPanelSoft);
 	SettingsPanel->SetPadding(FMargin(22.0f));
-	UVerticalBox* SettingsStack = WidgetTree->ConstructWidget<UVerticalBox>(UVerticalBox::StaticClass(), TEXT("Generated_RoomSettingsStack"));
+	UVerticalBox* SettingsStack = WidgetTree->ConstructWidget<UVerticalBox>(UVerticalBox::StaticClass(), TEXT("Generated_MatchSettingsStack"));
 	SettingsPanel->SetContent(SettingsStack);
-	SettingsStack->AddChildToVerticalBox(CreateMenuText(TEXT("Generated_RoomSettingsTitle"), FText::FromString(TEXT("ROOM SETTINGS")), 27.0f, EchoWhite))->SetPadding(FMargin(0.0f, 0.0f, 0.0f, 14.0f));
+	SettingsStack->AddChildToVerticalBox(CreateMenuText(TEXT("Generated_MatchSettingsTitle"), FText::FromString(TEXT("MATCH SETTINGS")), 27.0f, EchoWhite))->SetPadding(FMargin(0.0f, 0.0f, 0.0f, 6.0f));
+	SettingsStack->AddChildToVerticalBox(CreateMenuText(TEXT("Generated_MatchSettingsHint"), bIsHost ? FText::FromString(TEXT("Host chooses the map and player limit.")) : FText::FromString(TEXT("Host controls match settings.")), 15.0f, EchoMuted))->SetPadding(FMargin(0.0f, 0.0f, 0.0f, 14.0f));
 
-	const FString SelectedMap = LobbyGameState ? LobbyGameState->SelectedMapKey : TEXT("battle1");
-	SettingsStack->AddChildToVerticalBox(CreateMenuText(TEXT("Generated_SelectedMap"), FText::Format(FText::FromString(TEXT("Map: {0}")), GetMapDisplayName(SelectedMap)), 18.0f, EchoCyan))->SetPadding(FMargin(0.0f, 0.0f, 0.0f, 12.0f));
-
-	UScrollBox* RoomOptionsScroll = WidgetTree->ConstructWidget<UScrollBox>(UScrollBox::StaticClass(), TEXT("Generated_RoomOptionsScroll"));
-	RoomOptionsScroll->SetAlwaysShowScrollbar(true);
-	RoomOptionsScroll->SetScrollBarVisibility(ESlateVisibility::Visible);
-	UVerticalBox* RoomOptionsStack = WidgetTree->ConstructWidget<UVerticalBox>(UVerticalBox::StaticClass(), TEXT("Generated_RoomOptionsStack"));
-	RoomOptionsScroll->AddChild(RoomOptionsStack);
-	SettingsStack->AddChildToVerticalBox(RoomOptionsScroll)->SetSize(MakeSlotSize(ESlateSizeRule::Fill));
+	const FString SelectedMap = LobbyGameState ? LobbyGameState->SelectedMapKey : TEXT("level1");
+	SettingsStack->AddChildToVerticalBox(CreateMenuText(TEXT("Generated_SelectedMap"), FText::Format(FText::FromString(TEXT("Selected: {0}")), GetMapDisplayName(SelectedMap)), 18.0f, EchoCyan))->SetPadding(FMargin(0.0f, 0.0f, 0.0f, 12.0f));
 
 	if (bIsHost)
 	{
-		UButton* Level1Button = CreateMenuButton(TEXT("Generated_Map_Level1"), FText::FromString(TEXT("LeveL1")));
+		UButton* Level1Button = CreateMenuButton(TEXT("Generated_Map_Level1"), FText::FromString(TEXT("Level1")));
 		Level1Button->OnClicked.AddDynamic(this, &UEchoMainMenuWidget::HandleSelectMapLevel1);
-		RoomOptionsStack->AddChildToVerticalBox(Level1Button)->SetPadding(FMargin(0.0f, 0.0f, 12.0f, 8.0f));
+		SettingsStack->AddChildToVerticalBox(Level1Button)->SetPadding(FMargin(0.0f, 0.0f, 0.0f, 8.0f));
 
-		UButton* Level2Button = CreateMenuButton(TEXT("Generated_Map_Level2"), FText::FromString(TEXT("Level2")));
-		Level2Button->OnClicked.AddDynamic(this, &UEchoMainMenuWidget::HandleSelectMapLevel2);
-		RoomOptionsStack->AddChildToVerticalBox(Level2Button)->SetPadding(FMargin(0.0f, 0.0f, 12.0f, 8.0f));
-
-		UButton* LevelTestButton = CreateMenuButton(TEXT("Generated_Map_LevelTest"), FText::FromString(TEXT("level-Test")));
+		UButton* LevelTestButton = CreateMenuButton(TEXT("Generated_Map_LevelTest"), FText::FromString(TEXT("Train")));
 		LevelTestButton->OnClicked.AddDynamic(this, &UEchoMainMenuWidget::HandleSelectMapLevelTest);
-		RoomOptionsStack->AddChildToVerticalBox(LevelTestButton)->SetPadding(FMargin(0.0f, 0.0f, 12.0f, 8.0f));
+		SettingsStack->AddChildToVerticalBox(LevelTestButton)->SetPadding(FMargin(0.0f, 0.0f, 0.0f, 8.0f));
 
-		UButton* Battle1Button = CreateMenuButton(TEXT("Generated_Map_Battle1"), FText::FromString(TEXT("battle1")));
-		Battle1Button->OnClicked.AddDynamic(this, &UEchoMainMenuWidget::HandleSelectMapBattle1);
-		RoomOptionsStack->AddChildToVerticalBox(Battle1Button)->SetPadding(FMargin(0.0f, 0.0f, 12.0f, 8.0f));
-
-		UButton* Battle2Button = CreateMenuButton(TEXT("Generated_Map_Battle2"), FText::FromString(TEXT("battle2")));
-		Battle2Button->OnClicked.AddDynamic(this, &UEchoMainMenuWidget::HandleSelectMapBattle2);
-		RoomOptionsStack->AddChildToVerticalBox(Battle2Button)->SetPadding(FMargin(0.0f, 0.0f, 12.0f, 8.0f));
+		UButton* BattleMapButton = CreateMenuButton(TEXT("Generated_Map_BattleMap"), FText::FromString(TEXT("BattleMap")));
+		BattleMapButton->OnClicked.AddDynamic(this, &UEchoMainMenuWidget::HandleSelectMapBattle1);
+		SettingsStack->AddChildToVerticalBox(BattleMapButton)->SetPadding(FMargin(0.0f, 0.0f, 0.0f, 8.0f));
 
 		UHorizontalBox* MaxPlayersRow = WidgetTree->ConstructWidget<UHorizontalBox>(UHorizontalBox::StaticClass(), TEXT("Generated_MaxPlayersRow"));
 		UButton* DownButton = CreateMenuButton(TEXT("Generated_MaxPlayersDown"), FText::FromString(TEXT("-")));
@@ -1179,33 +1334,36 @@ void UEchoMainMenuWidget::RefreshInRoomScreen(bool bForceRefresh)
 		UButton* UpButton = CreateMenuButton(TEXT("Generated_MaxPlayersUp"), FText::FromString(TEXT("+")));
 		UpButton->OnClicked.AddDynamic(this, &UEchoMainMenuWidget::HandleMaxPlayersUp);
 		MaxPlayersRow->AddChildToHorizontalBox(UpButton)->SetSize(MakeSlotSize(ESlateSizeRule::Automatic));
-		RoomOptionsStack->AddChildToVerticalBox(MaxPlayersRow)->SetPadding(FMargin(0.0f, 8.0f, 12.0f, 18.0f));
+		SettingsStack->AddChildToVerticalBox(MaxPlayersRow)->SetPadding(FMargin(0.0f, 8.0f, 0.0f, 0.0f));
 	}
 	else
 	{
 		const int32 MaxPlayers = LobbyGameState ? LobbyGameState->MaxPlayers : 4;
-		RoomOptionsStack->AddChildToVerticalBox(CreateMenuText(TEXT("Generated_MaxPlayersReadonly"), FText::Format(FText::FromString(TEXT("Max Players: {0}")), FText::AsNumber(MaxPlayers)), 18.0f, EchoWhite))->SetPadding(FMargin(0.0f, 0.0f, 12.0f, 18.0f));
-		RoomOptionsStack->AddChildToVerticalBox(CreateMenuText(TEXT("Generated_ClientWaitNote"), FText::FromString(TEXT("Only the host can adjust room settings.")), 16.0f, EchoMuted))->SetPadding(FMargin(0.0f, 0.0f, 12.0f, 18.0f));
+		SettingsStack->AddChildToVerticalBox(CreateMenuText(TEXT("Generated_MaxPlayersReadonly"), FText::Format(FText::FromString(TEXT("Max Players: {0}")), FText::AsNumber(MaxPlayers)), 18.0f, EchoWhite))->SetPadding(FMargin(0.0f, 0.0f, 0.0f, 10.0f));
 	}
 
+	UHorizontalBox* ActionRow = WidgetTree->ConstructWidget<UHorizontalBox>(UHorizontalBox::StaticClass(), TEXT("Generated_InRoomActionRow"));
+	GeneratedScreenStack->AddChildToVerticalBox(ActionRow)->SetPadding(FMargin(0.0f, 18.0f, 0.0f, 10.0f));
 	if (bIsHost)
 	{
 		UButton* StartButton = CreateMenuButton(TEXT("Generated_HostStart"), LobbyGameState && LobbyGameState->bCanStart ? FText::FromString(TEXT("START")) : FText::FromString(TEXT("WAITING READY")), true);
 		StartButton->SetIsEnabled(LobbyGameState && LobbyGameState->bCanStart);
 		StartButton->OnClicked.AddDynamic(this, &UEchoMainMenuWidget::HandleHostStart);
-		SettingsStack->AddChildToVerticalBox(StartButton)->SetPadding(FMargin(0.0f, 0.0f, 0.0f, 10.0f));
+		ActionRow->AddChildToHorizontalBox(StartButton)->SetSize(MakeSlotSize(ESlateSizeRule::Fill));
 	}
 	else
 	{
 		const bool bReady = LocalPlayerState && LocalPlayerState->bReady;
 		UButton* ReadyButton = CreateMenuButton(TEXT("Generated_ReadyToggle"), bReady ? FText::FromString(TEXT("READY")) : FText::FromString(TEXT("READY UP")), true);
 		ReadyButton->OnClicked.AddDynamic(this, &UEchoMainMenuWidget::HandleReadyToggle);
-		SettingsStack->AddChildToVerticalBox(ReadyButton)->SetPadding(FMargin(0.0f, 0.0f, 0.0f, 10.0f));
+		ActionRow->AddChildToHorizontalBox(ReadyButton)->SetSize(MakeSlotSize(ESlateSizeRule::Fill));
 	}
 
 	UButton* LeaveButton = CreateMenuButton(TEXT("Generated_LeaveRoom"), FText::FromString(TEXT("LEAVE ROOM")), false, true);
 	LeaveButton->OnClicked.AddDynamic(this, &UEchoMainMenuWidget::HandleLeaveRoom);
-	SettingsStack->AddChildToVerticalBox(LeaveButton);
+	UHorizontalBoxSlot* LeaveSlot = ActionRow->AddChildToHorizontalBox(LeaveButton);
+	LeaveSlot->SetSize(MakeSlotSize(ESlateSizeRule::Fill));
+	LeaveSlot->SetPadding(FMargin(12.0f, 0.0f, 0.0f, 0.0f));
 
 	Body->AddChildToHorizontalBox(SettingsPanel)->SetSize(MakeSlotSize(ESlateSizeRule::Fill));
 
@@ -1235,9 +1393,10 @@ FString UEchoMainMenuWidget::BuildInRoomSnapshot() const
 	const AEchoLobbyPlayerController* LobbyController = Cast<AEchoLobbyPlayerController>(GetOwningPlayer());
 	const AEchoPlayerState* LocalPlayerState = LobbyController ? LobbyController->GetPlayerState<AEchoPlayerState>() : nullptr;
 	Snapshot += FString::Printf(
-		TEXT("LocalHost=%d|LocalReady=%d|"),
+		TEXT("LocalHost=%d|LocalReady=%d|LocalSkill=%d|"),
 		LocalPlayerState && LocalPlayerState->bIsHost ? 1 : 0,
-		LocalPlayerState && LocalPlayerState->bReady ? 1 : 0);
+		LocalPlayerState && LocalPlayerState->bReady ? 1 : 0,
+		LocalPlayerState ? static_cast<int32>(LocalPlayerState->SelectedSkill) : 0);
 
 	const AGameStateBase* GameState = GetWorld() ? GetWorld()->GetGameState() : nullptr;
 	if (!GameState)
@@ -1255,11 +1414,12 @@ FString UEchoMainMenuWidget::BuildInRoomSnapshot() const
 		}
 
 		Snapshot += FString::Printf(
-			TEXT("P%d:%s:%d:%d|"),
+			TEXT("P%d:%s:%d:%d:%d|"),
 			PlayerState->GetPlayerId(),
 			*EchoPlayerState->DisplayPlayerId,
 			EchoPlayerState->bReady ? 1 : 0,
-			EchoPlayerState->bIsHost ? 1 : 0);
+			EchoPlayerState->bIsHost ? 1 : 0,
+			static_cast<int32>(EchoPlayerState->SelectedSkill));
 	}
 
 	return Snapshot;
@@ -1295,6 +1455,25 @@ void UEchoMainMenuWidget::JoinCachedRoom(int32 CachedRoomIndex)
 	}
 }
 
+void UEchoMainMenuWidget::SelectLocalSkill(EEchoCharacterSkill Skill)
+{
+	AEchoLobbyPlayerController* LobbyController = Cast<AEchoLobbyPlayerController>(GetOwningPlayer());
+	AEchoPlayerState* LocalPlayerState = LobbyController ? LobbyController->GetPlayerState<AEchoPlayerState>() : nullptr;
+	if (!LobbyController || !LocalPlayerState)
+	{
+		return;
+	}
+
+	if (LocalPlayerState->SelectedSkill != Skill)
+	{
+		LocalPlayerState->SetSelectedSkill(Skill);
+		LobbyController->ServerSetSelectedSkill(Skill);
+	}
+
+	SetGeneratedStatus(FText::Format(FText::FromString(TEXT("Selected skill: {0}")), GetSkillDisplayName(Skill)));
+	RefreshInRoomScreen(true);
+}
+
 void UEchoMainMenuWidget::SelectLobbyMap(const FString& MapKey)
 {
 	AEchoLobbyPlayerController* LobbyController = Cast<AEchoLobbyPlayerController>(GetOwningPlayer());
@@ -1316,6 +1495,7 @@ void UEchoMainMenuWidget::ResetScreen()
 	GeneratedStatusText = nullptr;
 	GeneratedPlayerIdInput = nullptr;
 	GeneratedRoomNameInput = nullptr;
+	GeneratedDirectAddressInput = nullptr;
 	GeneratedRoomRows = nullptr;
 }
 
@@ -1367,6 +1547,22 @@ void UEchoMainMenuWidget::RefreshVolumeLabels()
 	if (Slider_MusicVolume)
 	{
 		Slider_MusicVolume->SetValue(MusicVolume);
+	}
+	if (UEchoGameInstance* GI = GetGameInstance<UEchoGameInstance>())
+	{
+		if (GeneratedMasterVolumeText) GeneratedMasterVolumeText->SetText(FormatVolume(GI->GetMasterVolume()));
+		if (GeneratedMasterVolumeSlider) GeneratedMasterVolumeSlider->SetValue(GI->GetMasterVolume());
+		if (GeneratedSensitivityText) GeneratedSensitivityText->SetText(FText::AsNumber(GI->GetMouseSensitivity()));
+		if (GeneratedSensitivitySlider) GeneratedSensitivitySlider->SetValue((GI->GetMouseSensitivity() - 0.1f) / 2.9f);
+		if (GeneratedVSyncCheckBox) GeneratedVSyncCheckBox->SetIsChecked(GI->IsVSyncEnabled());
+		auto SetButtonLabel = [](UButton* Button, const FText& Label)
+		{
+			if (Button) if (UTextBlock* Text = Cast<UTextBlock>(Button->GetContent())) Text->SetText(Label);
+		};
+		SetButtonLabel(GeneratedResolutionButton, FText::Format(FText::FromString(TEXT("Resolution: {0}")), GI->GetResolutionDisplayText()));
+		SetButtonLabel(GeneratedWindowModeButton, FText::Format(FText::FromString(TEXT("Display Mode: {0}")), GI->GetWindowModeDisplayText()));
+		SetButtonLabel(GeneratedQualityButton, FText::Format(FText::FromString(TEXT("Overall Quality: {0}")), GI->GetOverallQualityDisplayText()));
+		SetButtonLabel(GeneratedFrameRateButton, FText::Format(FText::FromString(TEXT("Frame Rate Limit: {0}")), GI->GetFrameRateLimitDisplayText()));
 	}
 }
 
@@ -1434,8 +1630,8 @@ UWidget* UEchoMainMenuWidget::CreateSettingsLayer()
 	GeneratedSettingsLayer->SetVerticalAlignment(VAlign_Center);
 
 	USizeBox* DialogSize = WidgetTree->ConstructWidget<USizeBox>(USizeBox::StaticClass(), TEXT("Generated_SettingsDialogSize"));
-	DialogSize->SetWidthOverride(660.0f);
-	DialogSize->SetHeightOverride(420.0f);
+	DialogSize->SetWidthOverride(720.0f);
+	DialogSize->SetHeightOverride(650.0f);
 	GeneratedSettingsLayer->SetContent(DialogSize);
 
 	UBorder* DialogPanel = WidgetTree->ConstructWidget<UBorder>(UBorder::StaticClass(), TEXT("Generated_SettingsDialog"));
@@ -1443,12 +1639,43 @@ UWidget* UEchoMainMenuWidget::CreateSettingsLayer()
 	DialogPanel->SetPadding(FMargin(34.0f, 30.0f));
 	DialogSize->AddChild(DialogPanel);
 
+	UScrollBox* SettingsScroll = WidgetTree->ConstructWidget<UScrollBox>(UScrollBox::StaticClass(), TEXT("Generated_SettingsScroll"));
+	SettingsScroll->SetScrollBarVisibility(ESlateVisibility::Visible);
+	DialogPanel->SetContent(SettingsScroll);
 	UVerticalBox* DialogStack = WidgetTree->ConstructWidget<UVerticalBox>(UVerticalBox::StaticClass(), TEXT("Generated_SettingsStack"));
-	DialogPanel->SetContent(DialogStack);
+	SettingsScroll->AddChild(DialogStack);
 
 	DialogStack->AddChildToVerticalBox(CreateMenuText(TEXT("Generated_SettingsTitle"), FText::FromString(TEXT("SETTINGS")), 32.0f, EchoWhite))->SetPadding(FMargin(0.0f, 0.0f, 0.0f, 22.0f));
-	DialogStack->AddChildToVerticalBox(CreateVolumeControl(TEXT("Generated_Settings_SfxVolume"), FText::FromString(TEXT("Sound Effects")), SfxVolume, true))->SetPadding(FMargin(0.0f, 0.0f, 0.0f, 12.0f));
-	DialogStack->AddChildToVerticalBox(CreateVolumeControl(TEXT("Generated_Settings_MusicVolume"), FText::FromString(TEXT("Background Music")), MusicVolume, false))->SetPadding(FMargin(0.0f, 0.0f, 0.0f, 24.0f));
+	const UEchoGameInstance* GI = GetGameInstance<UEchoGameInstance>();
+	DialogStack->AddChildToVerticalBox(CreateVolumeControl(TEXT("Generated_Settings_MasterVolume"), FText::FromString(TEXT("Master Volume")), GI ? GI->GetMasterVolume() : 1.0f, 0))->SetPadding(FMargin(0.0f, 0.0f, 0.0f, 12.0f));
+	DialogStack->AddChildToVerticalBox(CreateVolumeControl(TEXT("Generated_Settings_SfxVolume"), FText::FromString(TEXT("Sound Effects")), SfxVolume, 1))->SetPadding(FMargin(0.0f, 0.0f, 0.0f, 12.0f));
+	DialogStack->AddChildToVerticalBox(CreateVolumeControl(TEXT("Generated_Settings_MusicVolume"), FText::FromString(TEXT("Background Music")), MusicVolume, 2))->SetPadding(FMargin(0.0f, 0.0f, 0.0f, 12.0f));
+	DialogStack->AddChildToVerticalBox(CreateVolumeControl(TEXT("Generated_Settings_Sensitivity"), FText::FromString(TEXT("Mouse Sensitivity")), GI ? (GI->GetMouseSensitivity() - 0.1f) / 2.9f : 0.31f, 3))->SetPadding(FMargin(0.0f, 0.0f, 0.0f, 12.0f));
+
+	UHorizontalBox* VSyncRow = WidgetTree->ConstructWidget<UHorizontalBox>(UHorizontalBox::StaticClass(), TEXT("Generated_Settings_VSyncRow"));
+	VSyncRow->AddChildToHorizontalBox(CreateMenuText(TEXT("Generated_Settings_VSyncLabel"), FText::FromString(TEXT("Vertical Sync")), 18.0f, EchoWhite))->SetSize(MakeSlotSize(ESlateSizeRule::Fill));
+	GeneratedVSyncCheckBox = WidgetTree->ConstructWidget<UCheckBox>(UCheckBox::StaticClass(), TEXT("Generated_Settings_VSync"));
+	GeneratedVSyncCheckBox->SetIsChecked(GI && GI->IsVSyncEnabled());
+	GeneratedVSyncCheckBox->OnCheckStateChanged.AddDynamic(this, &UEchoMainMenuWidget::HandleVSyncChanged);
+	VSyncRow->AddChildToHorizontalBox(GeneratedVSyncCheckBox);
+	DialogStack->AddChildToVerticalBox(VSyncRow)->SetPadding(FMargin(0.0f, 4.0f, 0.0f, 18.0f));
+
+	GeneratedResolutionButton = CreateMenuButton(TEXT("Generated_SettingsResolutionButton"), FText::GetEmpty());
+	GeneratedResolutionButton->OnClicked.AddDynamic(this, &UEchoMainMenuWidget::HandleResolutionClicked);
+	GeneratedWindowModeButton = CreateMenuButton(TEXT("Generated_SettingsWindowModeButton"), FText::GetEmpty());
+	GeneratedWindowModeButton->OnClicked.AddDynamic(this, &UEchoMainMenuWidget::HandleWindowModeClicked);
+	GeneratedQualityButton = CreateMenuButton(TEXT("Generated_SettingsQualityButton"), FText::GetEmpty());
+	GeneratedQualityButton->OnClicked.AddDynamic(this, &UEchoMainMenuWidget::HandleQualityClicked);
+	GeneratedFrameRateButton = CreateMenuButton(TEXT("Generated_SettingsFrameRateButton"), FText::GetEmpty());
+	GeneratedFrameRateButton->OnClicked.AddDynamic(this, &UEchoMainMenuWidget::HandleFrameRateClicked);
+	DialogStack->AddChildToVerticalBox(GeneratedResolutionButton)->SetPadding(FMargin(0.0f, 2.0f));
+	DialogStack->AddChildToVerticalBox(GeneratedWindowModeButton)->SetPadding(FMargin(0.0f, 2.0f));
+	DialogStack->AddChildToVerticalBox(GeneratedQualityButton)->SetPadding(FMargin(0.0f, 2.0f));
+	DialogStack->AddChildToVerticalBox(GeneratedFrameRateButton)->SetPadding(FMargin(0.0f, 2.0f, 0.0f, 10.0f));
+
+	UButton* ResetButton = CreateMenuButton(TEXT("Generated_SettingsResetButton"), FText::FromString(TEXT("RESTORE DEFAULTS")));
+	ResetButton->OnClicked.AddDynamic(this, &UEchoMainMenuWidget::HandleResetSettings);
+	DialogStack->AddChildToVerticalBox(ResetButton)->SetPadding(FMargin(0.0f, 0.0f, 0.0f, 10.0f));
 
 	DialogStack->AddChildToVerticalBox(WidgetTree->ConstructWidget<USpacer>(USpacer::StaticClass(), TEXT("Generated_SettingsSpacer")))->SetSize(MakeSlotSize(ESlateSizeRule::Fill));
 
@@ -1460,7 +1687,7 @@ UWidget* UEchoMainMenuWidget::CreateSettingsLayer()
 	return GeneratedSettingsLayer;
 }
 
-UWidget* UEchoMainMenuWidget::CreateVolumeControl(FName RowName, const FText& Label, float Value, bool bSfxControl)
+UWidget* UEchoMainMenuWidget::CreateVolumeControl(FName RowName, const FText& Label, float Value, int32 ControlKind)
 {
 	UBorder* RowPanel = WidgetTree->ConstructWidget<UBorder>(UBorder::StaticClass(), RowName);
 	RowPanel->SetBrushColor(FLinearColor(0.012f, 0.020f, 0.025f, 0.72f));
@@ -1480,13 +1707,23 @@ UWidget* UEchoMainMenuWidget::CreateVolumeControl(FName RowName, const FText& La
 	VolumeSlider->SetStepSize(0.05f);
 	VolumeSlider->SetSliderBarColor(EchoCyanDim);
 	VolumeSlider->SetSliderHandleColor(EchoCyan);
-	if (bSfxControl)
+	if (ControlKind == 0)
+	{
+		GeneratedMasterVolumeSlider = VolumeSlider;
+		VolumeSlider->OnValueChanged.AddDynamic(this, &UEchoMainMenuWidget::HandleMasterVolumeChanged);
+	}
+	else if (ControlKind == 1)
 	{
 		VolumeSlider->OnValueChanged.AddDynamic(this, &UEchoMainMenuWidget::HandleSfxVolumeChanged);
 	}
-	else
+	else if (ControlKind == 2)
 	{
 		VolumeSlider->OnValueChanged.AddDynamic(this, &UEchoMainMenuWidget::HandleMusicVolumeChanged);
+	}
+	else
+	{
+		GeneratedSensitivitySlider = VolumeSlider;
+		VolumeSlider->OnValueChanged.AddDynamic(this, &UEchoMainMenuWidget::HandleSensitivityChanged);
 	}
 
 	UHorizontalBoxSlot* SliderSlot = RowLayout->AddChildToHorizontalBox(VolumeSlider);
@@ -1495,13 +1732,21 @@ UWidget* UEchoMainMenuWidget::CreateVolumeControl(FName RowName, const FText& La
 
 	UTextBlock* ValueText = CreateMenuText(FName(*FString::Printf(TEXT("%s_Value"), *RowName.ToString())), FText::GetEmpty(), 17.0f, EchoCyan, ETextJustify::Right);
 	ValueText->SetAutoWrapText(false);
-	if (bSfxControl)
+	if (ControlKind == 0)
+	{
+		GeneratedMasterVolumeText = ValueText;
+	}
+	else if (ControlKind == 1)
 	{
 		GeneratedSfxVolumeText = ValueText;
 	}
-	else
+	else if (ControlKind == 2)
 	{
 		GeneratedMusicVolumeText = ValueText;
+	}
+	else
+	{
+		GeneratedSensitivityText = ValueText;
 	}
 
 	USizeBox* ValueSize = WidgetTree->ConstructWidget<USizeBox>(USizeBox::StaticClass(), FName(*FString::Printf(TEXT("%s_ValueSize"), *RowName.ToString())));

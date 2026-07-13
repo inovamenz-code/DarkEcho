@@ -34,12 +34,19 @@ void UEchoMovementPulseComponent::BeginPlay()
 	}
 }
 
+void UEchoMovementPulseComponent::EndPlay(const EEndPlayReason::Type EndPlayReason)
+{
+	StopMovementAudio();
+	Super::EndPlay(EndPlayReason);
+}
+
 void UEchoMovementPulseComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
 {
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
 
 	if (!bEnableMovementPulses || bSuppressMovementEcho || !GetOwner())
 	{
+		StopMovementAudio();
 		return;
 	}
 
@@ -58,6 +65,10 @@ void UEchoMovementPulseComponent::TickComponent(float DeltaTime, ELevelTick Tick
 
 	if (!bMovedEnough)
 	{
+		if (bWasMoving)
+		{
+			StopMovementAudio();
+		}
 		MovingAccumulator = 0.0f;
 		bWasMoving = false;
 		return;
@@ -174,14 +185,33 @@ void UEchoMovementPulseComponent::EmitOneMovementWave()
 			MovementLoudness = 0.75f;
 		}
 
+		StopMovementAudio();
 		LastMovementAudioPostTime = CurrentTime;
-		AudioEvents->PostEchoSoundEvent(
+		ActiveMovementPlayingId = AudioEvents->PostEchoSoundEvent(
 			MovementSoundType,
 			Owner->GetActorLocation() + PulseOriginOffset,
 			MovementLoudness);
 	}
 
 	PendingBurstWaves = 0;
+}
+
+void UEchoMovementPulseComponent::StopMovementAudio()
+{
+	if (ActiveMovementPlayingId <= 0)
+	{
+		return;
+	}
+
+	if (AActor* Owner = GetOwner())
+	{
+		if (UEchoAudioEventComponent* AudioEvents = Owner->FindComponentByClass<UEchoAudioEventComponent>())
+		{
+			AudioEvents->StopEchoSoundEvent(ActiveMovementPlayingId, MovementAudioFadeOutSeconds);
+		}
+	}
+
+	ActiveMovementPlayingId = 0;
 }
 
 void UEchoMovementPulseComponent::EmitPulseForMovementStateChange(bool bActive)
@@ -278,6 +308,7 @@ void UEchoMovementPulseComponent::SetMovementEchoSuppressed(bool bSuppressed)
 	MovingAccumulator = 0.0f;
 	PendingBurstWaves = 0;
 	bWasMoving = false;
+	StopMovementAudio();
 
 	if (UWorld* World = GetWorld())
 	{

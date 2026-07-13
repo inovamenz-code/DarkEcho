@@ -15,7 +15,31 @@
 						<Bus Name="Enemy_Cues" ID="{1208A4B2-AE24-438A-9F85-A6A01AD74A98}"/>
 						<Bus Name="UI" ID="{84CF0D28-4AC1-42FC-9DE2-F3AC65BC2C40}"/>
 						<Bus Name="Ambience" ID="{E8B8667C-D6E1-4018-8651-9470F83583A8}"/>
-						<Bus Name="Reverb_Reflection" ID="{DA14E5E2-D327-4725-B6E4-A8BB277CB24D}"/>
+						<Bus Name="Reverb_Reflection" ID="{DA14E5E2-D327-4725-B6E4-A8BB277CB24D}">
+							<ChildrenList>
+								<AuxBus Name="RVB_Atrium" ID="{092084A6-ABBD-433A-BBE1-55F863919F4F}">
+									<PropertyList>
+										<Property Name="3DSpatialization" Type="int16" Value="2"/>
+										<Property Name="EnableDiffraction" Type="bool" Value="True"/>
+										<Property Name="ListenerRelativeRouting" Type="bool" Value="True"/>
+										<Property Name="UseGameAuxSends" Type="bool" Value="True"/>
+									</PropertyList>
+									<ObjectLists>
+										<ObjectList Name="Effects">
+											<EffectSlot Name="" ID="{1871623B-F074-4ACE-9C73-6CBCE539304F}">
+												<ReferenceList>
+													<Reference Name="Effect">
+														<Custom>
+															<Effect Name="Wwise_RoomVerb_(Custom)" ID="{7F9343B2-2A82-4309-84AA-A03393AE1B5E}" PluginName="Wwise RoomVerb" CompanyID="0" PluginID="118" PluginType="3"/>
+														</Custom>
+													</Reference>
+												</ReferenceList>
+											</EffectSlot>
+										</ObjectList>
+									</ObjectLists>
+								</AuxBus>
+							</ChildrenList>
+						</Bus>
 					</ChildrenList>
 				</Bus>
 			</ChildrenList>

@@ -3,6 +3,7 @@
 #include "EchoCombatComponent.h"
 
 #include "EchoDeathmatchGameMode.h"
+#include "EchoAudioEventComponent.h"
 #include "GameFramework/Actor.h"
 #include "GameFramework/Controller.h"
 #include "Net/UnrealNetwork.h"
@@ -109,11 +110,13 @@ void UEchoCombatComponent::ApplyDamageOnServer(float DamageAmount, AController* 
 
 	if (CurrentHealth > 0.0f)
 	{
+		MulticastPostCombatAudio(EEchoSoundEventType::PlayerHit, Owner->GetActorLocation(), PlayerHitAudioLoudness);
 		return;
 	}
 
 	bDead = true;
 	OnRep_Dead();
+	MulticastPostCombatAudio(EEchoSoundEventType::Death, Owner->GetActorLocation(), DeathAudioLoudness);
 
 	if (UWorld* World = GetWorld())
 	{
@@ -121,5 +124,19 @@ void UEchoCombatComponent::ApplyDamageOnServer(float DamageAmount, AController* 
 		{
 			GameMode->HandlePlayerKilled(Owner, InstigatorController);
 		}
+	}
+}
+
+void UEchoCombatComponent::MulticastPostCombatAudio_Implementation(EEchoSoundEventType EventType, FVector_NetQuantize Location, float Loudness)
+{
+	AActor* Owner = GetOwner();
+	if (!Owner)
+	{
+		return;
+	}
+
+	if (UEchoAudioEventComponent* AudioEvents = Owner->FindComponentByClass<UEchoAudioEventComponent>())
+	{
+		AudioEvents->PostEchoSoundEvent(EventType, Location, Loudness);
 	}
 }

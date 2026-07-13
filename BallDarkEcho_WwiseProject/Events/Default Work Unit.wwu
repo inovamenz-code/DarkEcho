@@ -28,7 +28,7 @@
 						<Action Name="" ID="{29264C93-D1DC-4A96-974A-9CCFA1318CCD}" ShortID="453148857">
 							<ReferenceList>
 								<Reference Name="Target">
-									<ObjectRef Name="SFX_Echo_Test_Beep" ID="{0195FC13-0657-4B0A-AB02-161BE7761B97}" WorkUnitID="{061430D0-7E9F-4CD7-A644-FDB73EB89B63}"/>
+									<ObjectRef Name="SFX_Move_BallRoll" ID="{10C00A1F-4DEA-4F40-A5C3-50A796ADA5CB}" WorkUnitID="{061430D0-7E9F-4CD7-A644-FDB73EB89B63}"/>
 								</Reference>
 							</ReferenceList>
 						</Action>
@@ -39,7 +39,7 @@
 						<Action Name="" ID="{E35C1985-40F9-4974-96FB-AA9AE62944DF}" ShortID="168540394">
 							<ReferenceList>
 								<Reference Name="Target">
-									<ObjectRef Name="SFX_Move_BallRoll" ID="{10C00A1F-4DEA-4F40-A5C3-50A796ADA5CB}" WorkUnitID="{061430D0-7E9F-4CD7-A644-FDB73EB89B63}"/>
+									<ObjectRef Name="SFX_Move_BallRoll_Sprint" ID="{A98AA22A-F2D0-4977-9B4B-AE6CBFDC222C}" WorkUnitID="{061430D0-7E9F-4CD7-A644-FDB73EB89B63}"/>
 								</Reference>
 							</ReferenceList>
 						</Action>
@@ -50,7 +50,7 @@
 						<Action Name="" ID="{8D3663D0-9E27-41F6-B53D-5A654D781EAB}" ShortID="400557306">
 							<ReferenceList>
 								<Reference Name="Target">
-									<ObjectRef Name="SFX_Move_BallRoll" ID="{10C00A1F-4DEA-4F40-A5C3-50A796ADA5CB}" WorkUnitID="{061430D0-7E9F-4CD7-A644-FDB73EB89B63}"/>
+									<ObjectRef Name="SFX_Move_BallRollSilent" ID="{D93EFD2E-33D7-4FF7-9FA4-E1BBC8D41E63}" WorkUnitID="{061430D0-7E9F-4CD7-A644-FDB73EB89B63}"/>
 								</Reference>
 							</ReferenceList>
 						</Action>
@@ -61,7 +61,7 @@
 						<Action Name="" ID="{F89B2DEF-660E-46AD-8188-F2EF1D83D812}" ShortID="951099072">
 							<ReferenceList>
 								<Reference Name="Target">
-									<ObjectRef Name="Snipe" ID="{14655564-CC41-4E2A-86A8-353A3C28CE37}" WorkUnitID="{061430D0-7E9F-4CD7-A644-FDB73EB89B63}"/>
+									<ObjectRef Name="CommonShoot" ID="{14655564-CC41-4E2A-86A8-353A3C28CE37}" WorkUnitID="{061430D0-7E9F-4CD7-A644-FDB73EB89B63}"/>
 								</Reference>
 							</ReferenceList>
 						</Action>
@@ -72,13 +72,78 @@
 						<Action Name="" ID="{773975F3-4C69-45C9-8CFF-50638EE453CE}" ShortID="413922711">
 							<ReferenceList>
 								<Reference Name="Target">
-									<ObjectRef Name="Snipe" ID="{14655564-CC41-4E2A-86A8-353A3C28CE37}" WorkUnitID="{061430D0-7E9F-4CD7-A644-FDB73EB89B63}"/>
+									<ObjectRef Name="RapidShoot" ID="{07F82A96-8F57-4544-9974-19C08F22DDC2}" WorkUnitID="{061430D0-7E9F-4CD7-A644-FDB73EB89B63}"/>
 								</Reference>
 							</ReferenceList>
 						</Action>
 					</ChildrenList>
 				</Event>
-				<Event Name="Play_Weapon_Snipe_Fire" ID="{5CB77170-E19A-44CF-9CE9-4CEC659D1072}"/>
+				<Event Name="Play_Weapon_Snipe_Fire" ID="{5CB77170-E19A-44CF-9CE9-4CEC659D1072}">
+					<ChildrenList>
+						<Action Name="" ID="{06D0189B-FEFC-48D7-8117-7F6EA917337A}" ShortID="413427505">
+							<ReferenceList>
+								<Reference Name="Target">
+									<ObjectRef Name="Snipesci-fi-weapon-laser-shot-04-316416" ID="{721E5DA3-CD09-4925-A567-7FE029D03691}" WorkUnitID="{061430D0-7E9F-4CD7-A644-FDB73EB89B63}"/>
+								</Reference>
+							</ReferenceList>
+						</Action>
+					</ChildrenList>
+				</Event>
+				<Event Name="Play_Projectile_Impact" ID="{4A182FEB-045F-4662-9A9F-25033A141BD1}">
+					<ChildrenList>
+						<Action Name="" ID="{9DBCC438-8904-4062-9F49-223EB67A117C}" ShortID="666174107">
+							<ReferenceList>
+								<Reference Name="Target">
+									<ObjectRef Name="projectile_impact_placeholder_01" ID="{FC84392D-B8AE-48CB-9DD7-42FB7FA762B9}" WorkUnitID="{061430D0-7E9F-4CD7-A644-FDB73EB89B63}"/>
+								</Reference>
+							</ReferenceList>
+						</Action>
+					</ChildrenList>
+				</Event>
+				<Event Name="Play_Scan_Pulse" ID="{0658C768-0E4A-4FBB-A634-96CCAEEB2CA1}">
+					<ChildrenList>
+						<Action Name="" ID="{CF8B08BB-63EF-4115-8ECD-0BC4B89DD2FA}" ShortID="367056258">
+							<ReferenceList>
+								<Reference Name="Target">
+									<ObjectRef Name="Scan_Default" ID="{ACD571BD-EC96-44DD-AB8D-EF5AEAF285E5}" WorkUnitID="{061430D0-7E9F-4CD7-A644-FDB73EB89B63}"/>
+								</Reference>
+							</ReferenceList>
+						</Action>
+					</ChildrenList>
+				</Event>
+				<Event Name="Play_Decoy_Footstep" ID="{5A1C9A6B-8772-4409-AFBE-65F61054C403}">
+					<ChildrenList>
+						<Action Name="" ID="{C06E32CD-0B9B-47B2-A35B-07063BE189F4}" ShortID="74809609">
+							<ReferenceList>
+								<Reference Name="Target">
+									<ObjectRef Name="Play_Decoy_Footstep" ID="{E44C3477-F565-41AD-89B3-04E3846E6DB4}" WorkUnitID="{061430D0-7E9F-4CD7-A644-FDB73EB89B63}"/>
+								</Reference>
+							</ReferenceList>
+						</Action>
+					</ChildrenList>
+				</Event>
+				<Event Name="Play_Player_Hit" ID="{0483BCB3-DC05-4CB4-9CEC-81C096998FF2}">
+					<ChildrenList>
+						<Action Name="" ID="{113F130A-354F-44FC-B959-12D44C384870}" ShortID="294582133">
+							<ReferenceList>
+								<Reference Name="Target">
+									<ObjectRef Name="PlayerHits" ID="{22C4B96C-9F25-4433-B89F-DC30FE546244}" WorkUnitID="{061430D0-7E9F-4CD7-A644-FDB73EB89B63}"/>
+								</Reference>
+							</ReferenceList>
+						</Action>
+					</ChildrenList>
+				</Event>
+				<Event Name="Play_Death" ID="{22A22CA1-8913-40A0-B011-4E812589F770}">
+					<ChildrenList>
+						<Action Name="" ID="{9B8655AC-F98C-4744-95B0-EC714E796FA7}" ShortID="333963883">
+							<ReferenceList>
+								<Reference Name="Target">
+									<ObjectRef Name="PlayerDeath" ID="{278B92FB-2034-4822-B0C5-091A46B545A9}" WorkUnitID="{061430D0-7E9F-4CD7-A644-FDB73EB89B63}"/>
+								</Reference>
+							</ReferenceList>
+						</Action>
+					</ChildrenList>
+				</Event>
 			</ChildrenList>
 		</WorkUnit>
 	</Events>

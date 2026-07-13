@@ -10,11 +10,19 @@
     "Type": "User",
     "GUID": "{1DF0FBEC-B2D4-4BB9-83C5-789B49A76246}",
     "Language": "SFX",
-    "Hash": "{72A4D158-9B23-3A33-B170-5BB468F378D1}",
+    "Hash": "{41C2F37E-28D6-5BAB-E2A9-91F543DC1308}",
     "ObjectPath": "\\SoundBanks\\Default Work Unit\\Main_Gameplay",
     "ShortName": "Main_Gameplay",
     "Path": "Main_Gameplay.bnk",
     "Media": [
+     {
+      "Id": "123335188",
+      "Language": "SFX",
+      "Streaming": "false",
+      "Location": "Memory",
+      "ShortName": "DSGNBass_Bass Drop & Downer Fast 16_344 Audio_Bass Drops & Downers.wav",
+      "CachePath": "D4/{D49FAC1E-3B7C-99DC-62EF-EDE3B27BB73B}.wem"
+     },
      {
       "Id": "237410838",
       "Language": "SFX",
@@ -22,6 +30,22 @@
       "Location": "Memory",
       "ShortName": "scficShoot.wav",
       "CachePath": "3A/{3A67986A-7A0E-17EE-D2CD-8925DD91DE58}.wem"
+     },
+     {
+      "Id": "638952218",
+      "Language": "SFX",
+      "Streaming": "false",
+      "Location": "Memory",
+      "ShortName": "Move_Silent_Wood.wav",
+      "CachePath": "AB/{AB473151-FF83-D5F0-BDF8-5F9C7C5434D0}.wem"
+     },
+     {
+      "Id": "687552056",
+      "Language": "SFX",
+      "Streaming": "false",
+      "Location": "Memory",
+      "ShortName": "Snipesci-fi-weapon-laser-shot-04-316416.wav",
+      "CachePath": "DA/{DA8DEA76-9A13-E54D-8A1D-6AE85001CB9E}.wem"
      },
      {
       "Id": "825503811",
@@ -32,6 +56,14 @@
       "CachePath": "27/{27F02B6F-224D-8D67-2372-E3E67D446710}.wem"
      },
      {
+      "Id": "851907246",
+      "Language": "SFX",
+      "Streaming": "false",
+      "Location": "Memory",
+      "ShortName": "projectile_impact_placeholder_01.wav",
+      "CachePath": "45/{45D95393-A2C2-6B08-9440-2DB29F86915C}.wem"
+     },
+     {
       "Id": "1045975195",
       "Language": "SFX",
       "Streaming": "false",
@@ -40,18 +72,60 @@
       "CachePath": "60/{600BD48D-6C0D-EF3B-E684-FFAB1667B483}.wem"
      }
     ],
+    "Plugins": {
+     "Custom": [
+      {
+       "Id": "470205082",
+       "Name": "Wwise_RoomVerb_(Custom)",
+       "ObjectPath": "\\Busses\\Default Work Unit\\Main Audio Bus\\Reverb_Reflection\\RVB_Atrium\\[Effect Slot [0]: (RoomVerb)]\\Wwise_RoomVerb_(Custom)",
+       "GUID": "{7F9343B2-2A82-4309-84AA-A03393AE1B5E}",
+       "LibName": "Wwise RoomVerb",
+       "LibId": "7733251"
+      }
+     ]
+    },
     "Events": [
+     {
+      "Id": "1172822028",
+      "Name": "Play_Death",
+      "ObjectPath": "\\Events\\Default Work Unit\\Play_Death",
+      "GUID": "{22A22CA1-8913-40A0-B011-4E812589F770}",
+      "DurationType": "OneShot",
+      "DurationMin": "2.125",
+      "DurationMax": "2.125",
+      "MediaRefs": [
+       {
+        "Id": "123335188"
+       }
+      ]
+     },
+     {
+      "Id": "4224864163",
+      "Name": "Play_Decoy_Footstep",
+      "ObjectPath": "\\Events\\Default Work Unit\\Play_Decoy_Footstep",
+      "GUID": "{5A1C9A6B-8772-4409-AFBE-65F61054C403}",
+      "MaxAttenuation": "1400",
+      "DurationType": "OneShot",
+      "DurationMin": "0.46121484",
+      "DurationMax": "0.46121484",
+      "MediaRefs": [
+       {
+        "Id": "825503811"
+       }
+      ]
+     },
      {
       "Id": "1698210093",
       "Name": "Play_Move_Normal",
       "ObjectPath": "\\Events\\Default Work Unit\\Play_Move_Normal",
       "GUID": "{53802EA6-46A2-46CA-B849-CC3A43128545}",
+      "MaxAttenuation": "1600",
       "DurationType": "OneShot",
-      "DurationMin": "0.4353288",
-      "DurationMax": "0.4353288",
+      "DurationMin": "4.106917",
+      "DurationMax": "4.106917",
       "MediaRefs": [
        {
-        "Id": "825503811"
+        "Id": "1045975195"
        }
       ]
      },
@@ -60,12 +134,13 @@
       "Name": "Play_Move_Silent",
       "ObjectPath": "\\Events\\Default Work Unit\\Play_Move_Silent",
       "GUID": "{78B906BC-63AD-4C96-9555-337485D3C99A}",
+      "MaxAttenuation": "1000",
       "DurationType": "OneShot",
-      "DurationMin": "4.106917",
-      "DurationMax": "4.106917",
+      "DurationMin": "8.679177",
+      "DurationMax": "8.679177",
       "MediaRefs": [
        {
-        "Id": "1045975195"
+        "Id": "638952218"
        }
       ]
      },
@@ -74,12 +149,56 @@
       "Name": "Play_Move_Sprint",
       "ObjectPath": "\\Events\\Default Work Unit\\Play_Move_Sprint",
       "GUID": "{8BAB1180-C553-4403-8B6F-4AB31A24A390}",
+      "MaxAttenuation": "2700",
       "DurationType": "OneShot",
-      "DurationMin": "4.106917",
-      "DurationMax": "4.106917",
+      "DurationMin": "3.421722",
+      "DurationMax": "3.421722",
       "MediaRefs": [
        {
         "Id": "1045975195"
+       }
+      ]
+     },
+     {
+      "Id": "1864892471",
+      "Name": "Play_Player_Hit",
+      "ObjectPath": "\\Events\\Default Work Unit\\Play_Player_Hit",
+      "GUID": "{0483BCB3-DC05-4CB4-9CEC-81C096998FF2}",
+      "DurationType": "OneShot",
+      "DurationMin": "2.125",
+      "DurationMax": "2.125",
+      "MediaRefs": [
+       {
+        "Id": "123335188"
+       }
+      ]
+     },
+     {
+      "Id": "2572788460",
+      "Name": "Play_Projectile_Impact",
+      "ObjectPath": "\\Events\\Default Work Unit\\Play_Projectile_Impact",
+      "GUID": "{4A182FEB-045F-4662-9A9F-25033A141BD1}",
+      "DurationType": "OneShot",
+      "DurationMin": "1",
+      "DurationMax": "1",
+      "MediaRefs": [
+       {
+        "Id": "851907246"
+       }
+      ]
+     },
+     {
+      "Id": "183375431",
+      "Name": "Play_Scan_Pulse",
+      "ObjectPath": "\\Events\\Default Work Unit\\Play_Scan_Pulse",
+      "GUID": "{0658C768-0E4A-4FBB-A634-96CCAEEB2CA1}",
+      "MaxAttenuation": "1600",
+      "DurationType": "OneShot",
+      "DurationMin": "2.125",
+      "DurationMax": "2.125",
+      "MediaRefs": [
+       {
+        "Id": "123335188"
        }
       ]
      },
@@ -88,9 +207,10 @@
       "Name": "Play_Weapon_Rapid_Fire",
       "ObjectPath": "\\Events\\Default Work Unit\\Play_Weapon_Rapid_Fire",
       "GUID": "{446A50CF-3CA5-4908-A974-501B604A4E16}",
+      "MaxAttenuation": "1800",
       "DurationType": "OneShot",
-      "DurationMin": "1.02865",
-      "DurationMax": "1.02865",
+      "DurationMin": "0.9432763",
+      "DurationMax": "0.9432763",
       "MediaRefs": [
        {
         "Id": "237410838"
@@ -102,16 +222,22 @@
       "Name": "Play_Weapon_Snipe_Fire",
       "ObjectPath": "\\Events\\Default Work Unit\\Play_Weapon_Snipe_Fire",
       "GUID": "{5CB77170-E19A-44CF-9CE9-4CEC659D1072}",
-      "MaxAttenuation": "0",
+      "MaxAttenuation": "2700",
       "DurationType": "OneShot",
-      "DurationMin": "0",
-      "DurationMax": "0"
+      "DurationMin": "1.584",
+      "DurationMax": "1.584",
+      "MediaRefs": [
+       {
+        "Id": "687552056"
+       }
+      ]
      },
      {
       "Id": "170202313",
       "Name": "Play_Weapon_Standard_Fire",
       "ObjectPath": "\\Events\\Default Work Unit\\Play_Weapon_Standard_Fire",
       "GUID": "{F3EF955E-10C1-4BE9-B887-12103B61A347}",
+      "MaxAttenuation": "1800",
       "DurationType": "OneShot",
       "DurationMin": "1.02865",
       "DurationMax": "1.02865",
@@ -121,9 +247,38 @@
        }
       ]
      }
+    ],
+    "Busses": [
+     {
+      "Id": "1281534399",
+      "Name": "Reverb_Reflection",
+      "ObjectPath": "\\Busses\\Default Work Unit\\Main Audio Bus\\Reverb_Reflection",
+      "GUID": "{DA14E5E2-D327-4725-B6E4-A8BB277CB24D}"
+     },
+     {
+      "Id": "2246998526",
+      "Name": "Main Audio Bus",
+      "ObjectPath": "\\Busses\\Default Work Unit\\Main Audio Bus",
+      "GUID": "{1514A4D8-1DA6-412A-A17E-75CA0C2149F3}"
+     }
+    ],
+    "AuxBusses": [
+     {
+      "Id": "2219666210",
+      "Name": "RVB_Atrium",
+      "ObjectPath": "\\Busses\\Default Work Unit\\Main Audio Bus\\Reverb_Reflection\\RVB_Atrium",
+      "GUID": "{092084A6-ABBD-433A-BBE1-55F863919F4F}",
+      "PluginRefs": {
+       "Custom": [
+        {
+         "Id": "470205082"
+        }
+       ]
+      }
+     }
     ]
    }
   ],
-  "FileHash": "{B26AD958-DB25-896C-3109-E0C68F3A4491}"
+  "FileHash": "{484E62C0-408B-984A-5E4A-DFF890C40E8A}"
  }
 }

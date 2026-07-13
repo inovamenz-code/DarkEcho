@@ -3,11 +3,13 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "EchoTypes.h"
 #include "Blueprint/UserWidget.h"
 #include "EchoMainMenuWidget.generated.h"
 
 class UBorder;
 class UButton;
+class UCheckBox;
 class UEditableTextBox;
 class UOverlay;
 class UPanelWidget;
@@ -145,6 +147,9 @@ protected:
 	TObjectPtr<UEditableTextBox> Input_RoomName = nullptr;
 
 	UPROPERTY(BlueprintReadOnly, meta = (BindWidgetOptional), Category = "Echo|Main Menu|Designed")
+	TObjectPtr<UEditableTextBox> Input_DirectAddress = nullptr;
+
+	UPROPERTY(BlueprintReadOnly, meta = (BindWidgetOptional), Category = "Echo|Main Menu|Designed")
 	TObjectPtr<UButton> Button_Start = nullptr;
 
 	UPROPERTY(BlueprintReadOnly, meta = (BindWidgetOptional), Category = "Echo|Main Menu|Designed")
@@ -161,6 +166,9 @@ protected:
 
 	UPROPERTY(BlueprintReadOnly, meta = (BindWidgetOptional), Category = "Echo|Main Menu|Designed")
 	TObjectPtr<UButton> Button_RefreshRooms = nullptr;
+
+	UPROPERTY(BlueprintReadOnly, meta = (BindWidgetOptional), Category = "Echo|Main Menu|Designed")
+	TObjectPtr<UButton> Button_DirectConnect = nullptr;
 
 	UPROPERTY(BlueprintReadOnly, meta = (BindWidgetOptional), Category = "Echo|Main Menu|Designed")
 	TObjectPtr<UButton> Button_CreateRoom = nullptr;
@@ -185,6 +193,18 @@ protected:
 
 	UPROPERTY(BlueprintReadOnly, meta = (BindWidgetOptional), Category = "Echo|Main Menu|Designed")
 	TObjectPtr<UButton> Button_MaxPlayersUp = nullptr;
+
+	UPROPERTY(BlueprintReadOnly, meta = (BindWidgetOptional), Category = "Echo|Main Menu|Designed")
+	TObjectPtr<UButton> Button_SkillWideEchoScan = nullptr;
+
+	UPROPERTY(BlueprintReadOnly, meta = (BindWidgetOptional), Category = "Echo|Main Menu|Designed")
+	TObjectPtr<UButton> Button_SkillNoiseDecoy = nullptr;
+
+	UPROPERTY(BlueprintReadOnly, meta = (BindWidgetOptional), Category = "Echo|Main Menu|Designed")
+	TObjectPtr<UButton> Button_SkillResonanceBeam = nullptr;
+
+	UPROPERTY(BlueprintReadOnly, meta = (BindWidgetOptional), Category = "Echo|Main Menu|Designed")
+	TObjectPtr<UButton> Button_SkillStealthRun = nullptr;
 
 	UPROPERTY(BlueprintReadOnly, meta = (BindWidgetOptional), Category = "Echo|Main Menu|Designed")
 	TObjectPtr<UButton> Button_HostStart = nullptr;
@@ -215,6 +235,9 @@ protected:
 
 	UPROPERTY(BlueprintReadOnly, meta = (BindWidgetOptional), Category = "Echo|Main Menu|Designed")
 	TObjectPtr<UTextBlock> Text_MaxPlayers = nullptr;
+
+	UPROPERTY(BlueprintReadOnly, meta = (BindWidgetOptional), Category = "Echo|Main Menu|Designed")
+	TObjectPtr<UTextBlock> Text_SelectedSkill = nullptr;
 
 	UPROPERTY(BlueprintReadOnly, meta = (BindWidgetOptional), Category = "Echo|Main Menu|Designed")
 	TObjectPtr<UTextBlock> Text_LobbyStatus = nullptr;
@@ -256,6 +279,9 @@ private:
 	void HandleRefreshRooms();
 
 	UFUNCTION()
+	void HandleDirectConnect();
+
+	UFUNCTION()
 	void HandleCreateRoom();
 
 	UFUNCTION()
@@ -274,6 +300,18 @@ private:
 	void HandleMaxPlayersUp();
 
 	UFUNCTION()
+	void HandleSelectSkillWideEchoScan();
+
+	UFUNCTION()
+	void HandleSelectSkillNoiseDecoy();
+
+	UFUNCTION()
+	void HandleSelectSkillResonanceBeam();
+
+	UFUNCTION()
+	void HandleSelectSkillStealthRun();
+
+	UFUNCTION()
 	void HandleSelectMapLevel1();
 
 	UFUNCTION()
@@ -287,6 +325,9 @@ private:
 
 	UFUNCTION()
 	void HandleSelectMapBattle2();
+
+	UFUNCTION()
+	void HandleSelectMapBattle3();
 
 	UFUNCTION()
 	void HandleJoinRoom0();
@@ -322,6 +363,23 @@ private:
 	void HandleMusicVolumeChanged(float Volume);
 
 	UFUNCTION()
+	void HandleMasterVolumeChanged(float Volume);
+
+	UFUNCTION()
+	void HandleSensitivityChanged(float Value);
+
+	UFUNCTION()
+	void HandleVSyncChanged(bool bChecked);
+
+	UFUNCTION()
+	void HandleResetSettings();
+
+	UFUNCTION() void HandleResolutionClicked();
+	UFUNCTION() void HandleWindowModeClicked();
+	UFUNCTION() void HandleQualityClicked();
+	UFUNCTION() void HandleFrameRateClicked();
+
+	UFUNCTION()
 	void HandleLanRoomsUpdated();
 
 	UFUNCTION()
@@ -334,7 +392,7 @@ private:
 	void ApplyInputTextStyle(UEditableTextBox* Input) const;
 	void ClearPanel(UPanelWidget* Panel) const;
 	void AddRoomRow(const FEchoLanRoomInfo& RoomInfo);
-	void AddPlayerRow(const FString& DisplayPlayerId, bool bReady, bool bIsHost);
+	void AddPlayerRow(const FString& DisplayPlayerId, bool bReady, bool bIsHost, EEchoCharacterSkill SelectedSkill);
 	void EnsureDefaultMenuTree();
 	bool ShouldGenerateDefaultMenu() const;
 	bool IsGeneratedMenuRoot(const UWidget* RootWidget) const;
@@ -350,6 +408,7 @@ private:
 	FString BuildInRoomSnapshot() const;
 	void RegisterLocalPlayerWithServer();
 	void JoinCachedRoom(int32 CachedRoomIndex);
+	void SelectLocalSkill(EEchoCharacterSkill Skill);
 	void SelectLobbyMap(const FString& MapKey);
 	void ResetScreen();
 	void SetGeneratedStatus(const FText& StatusText);
@@ -360,7 +419,7 @@ private:
 	UButton* CreateMenuButton(FName WidgetName, const FText& Text, bool bPrimary = false, bool bDanger = false, bool bEnabled = true) const;
 	UEditableTextBox* CreateTextInput(FName WidgetName, const FText& HintText, const FText& InitialText = FText::GetEmpty()) const;
 	UWidget* CreateSettingsLayer();
-	UWidget* CreateVolumeControl(FName RowName, const FText& Label, float Value, bool bSfxControl);
+	UWidget* CreateVolumeControl(FName RowName, const FText& Label, float Value, int32 ControlKind);
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Echo|Main Menu|Designed", meta = (AllowPrivateAccess = "true"))
 	TSubclassOf<UEchoRoomRowWidget> RoomRowWidgetClass;
@@ -387,10 +446,33 @@ private:
 	TObjectPtr<UTextBlock> GeneratedMusicVolumeText = nullptr;
 
 	UPROPERTY(Transient)
+	TObjectPtr<UTextBlock> GeneratedMasterVolumeText = nullptr;
+
+	UPROPERTY(Transient)
+	TObjectPtr<UTextBlock> GeneratedSensitivityText = nullptr;
+
+	UPROPERTY(Transient)
+	TObjectPtr<USlider> GeneratedMasterVolumeSlider = nullptr;
+
+	UPROPERTY(Transient)
+	TObjectPtr<USlider> GeneratedSensitivitySlider = nullptr;
+
+	UPROPERTY(Transient)
+	TObjectPtr<UCheckBox> GeneratedVSyncCheckBox = nullptr;
+
+	UPROPERTY(Transient) TObjectPtr<UButton> GeneratedResolutionButton = nullptr;
+	UPROPERTY(Transient) TObjectPtr<UButton> GeneratedWindowModeButton = nullptr;
+	UPROPERTY(Transient) TObjectPtr<UButton> GeneratedQualityButton = nullptr;
+	UPROPERTY(Transient) TObjectPtr<UButton> GeneratedFrameRateButton = nullptr;
+
+	UPROPERTY(Transient)
 	TObjectPtr<UEditableTextBox> GeneratedPlayerIdInput = nullptr;
 
 	UPROPERTY(Transient)
 	TObjectPtr<UEditableTextBox> GeneratedRoomNameInput = nullptr;
+
+	UPROPERTY(Transient)
+	TObjectPtr<UEditableTextBox> GeneratedDirectAddressInput = nullptr;
 
 	UPROPERTY(Transient)
 	TObjectPtr<UVerticalBox> GeneratedRoomRows = nullptr;

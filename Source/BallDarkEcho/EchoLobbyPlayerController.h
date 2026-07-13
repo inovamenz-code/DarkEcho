@@ -3,6 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "EchoTypes.h"
 #include "GameFramework/PlayerController.h"
 #include "EchoLobbyPlayerController.generated.h"
 
@@ -23,6 +24,9 @@ public:
 
 	UFUNCTION(Server, Reliable)
 	void ServerSetReady(bool bReady);
+
+	UFUNCTION(Server, Reliable)
+	void ServerSetSelectedSkill(EEchoCharacterSkill SelectedSkill);
 
 	UFUNCTION(Server, Reliable)
 	void ServerUpdateRoomSettings(const FString& SelectedMapKey, int32 MaxPlayers);

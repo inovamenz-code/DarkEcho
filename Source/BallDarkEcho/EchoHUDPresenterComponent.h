@@ -16,6 +16,7 @@ class AEchoPlayerState;
 class UEchoExplorationMapComponent;
 class UEchoExplorationMapWidget;
 class UEchoHUDWidget;
+class UEchoPauseMenuWidget;
 
 UCLASS(ClassGroup = (Echo), meta = (BlueprintSpawnableComponent))
 class BALLDARKECHO_API UEchoHUDPresenterComponent : public UActorComponent
@@ -33,6 +34,9 @@ public:
 
 	UFUNCTION(BlueprintCallable, Category = "Echo|HUD")
 	void ToggleLargeMap();
+
+	UFUNCTION(BlueprintCallable, Category = "Echo|HUD")
+	void TogglePauseMenu();
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Echo|HUD")
 	TSubclassOf<UEchoHUDWidget> HUDWidgetClass;
@@ -112,6 +116,8 @@ private:
 	void PushDeathmatchScoreToHUD();
 	void ShowLargeMapPressed();
 	void ShowLargeMapReleased();
+	UFUNCTION() void ClosePauseMenu();
+	void BindPauseMenuInput();
 	void BindGameplayComponent(UEchoGameplayComponent* GameplayComponent);
 	void BindCombatComponent(UEchoCombatComponent* CombatComponent);
 	void BindWeaponComponent(UEchoWeaponComponent* WeaponComponent);
@@ -122,4 +128,7 @@ private:
 	TWeakObjectPtr<UEchoExplorationMapComponent> BoundExplorationMapComponent;
 	TWeakObjectPtr<AEchoPlayerState> BoundPlayerState;
 	TWeakObjectPtr<AEchoDeathmatchGameState> BoundGameState;
+
+	UPROPERTY(Transient)
+	TObjectPtr<UEchoPauseMenuWidget> PauseMenuWidget;
 };

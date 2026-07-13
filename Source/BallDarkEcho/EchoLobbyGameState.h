@@ -23,7 +23,7 @@ public:
 	FString RoomName = TEXT("LAN Room");
 
 	UPROPERTY(ReplicatedUsing = OnRep_LobbyState, BlueprintReadOnly, Category = "Echo|Lobby")
-	FString SelectedMapKey = TEXT("battle1");
+	FString SelectedMapKey = TEXT("level1");
 
 	UPROPERTY(ReplicatedUsing = OnRep_LobbyState, BlueprintReadOnly, Category = "Echo|Lobby")
 	int32 MaxPlayers = 4;

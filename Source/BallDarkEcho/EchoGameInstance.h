@@ -45,7 +45,9 @@ enum class EEchoMenuFlowState : uint8
 	InRoom
 };
 
-UCLASS()
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FEchoUserSettingsChangedSignature);
+
+UCLASS(Config=Game)
 class BALLDARKECHO_API UEchoGameInstance : public UGameInstance
 {
 	GENERATED_BODY()
@@ -53,6 +55,52 @@ class BALLDARKECHO_API UEchoGameInstance : public UGameInstance
 public:
 	virtual void Init() override;
 	virtual void Shutdown() override;
+
+	UFUNCTION(BlueprintCallable, Category = "Echo|Settings")
+	void SetMasterVolume(float Volume, bool bSave = true);
+
+	UFUNCTION(BlueprintCallable, Category = "Echo|Settings")
+	void SetSfxVolume(float Volume, bool bSave = true);
+
+	UFUNCTION(BlueprintCallable, Category = "Echo|Settings")
+	void SetMusicVolume(float Volume, bool bSave = true);
+
+	UFUNCTION(BlueprintCallable, Category = "Echo|Settings")
+	void SetMouseSensitivity(float Sensitivity, bool bSave = true);
+
+	UFUNCTION(BlueprintCallable, Category = "Echo|Settings")
+	void SetVSyncEnabled(bool bEnabled, bool bSave = true);
+
+	UFUNCTION(BlueprintCallable, Category = "Echo|Settings")
+	void CycleResolution(int32 Direction = 1);
+
+	UFUNCTION(BlueprintCallable, Category = "Echo|Settings")
+	void CycleWindowMode(int32 Direction = 1);
+
+	UFUNCTION(BlueprintCallable, Category = "Echo|Settings")
+	void CycleOverallQuality(int32 Direction = 1);
+
+	UFUNCTION(BlueprintCallable, Category = "Echo|Settings")
+	void CycleFrameRateLimit(int32 Direction = 1);
+
+	UFUNCTION(BlueprintCallable, Category = "Echo|Settings")
+	void ApplyUserSettings(bool bSave = true);
+
+	UFUNCTION(BlueprintCallable, Category = "Echo|Settings")
+	void ResetUserSettingsToDefaults();
+
+	UFUNCTION(BlueprintPure, Category = "Echo|Settings") float GetMasterVolume() const { return MasterVolume; }
+	UFUNCTION(BlueprintPure, Category = "Echo|Settings") float GetSfxVolume() const { return SfxVolume; }
+	UFUNCTION(BlueprintPure, Category = "Echo|Settings") float GetMusicVolume() const { return MusicVolume; }
+	UFUNCTION(BlueprintPure, Category = "Echo|Settings") float GetMouseSensitivity() const { return MouseSensitivity; }
+	UFUNCTION(BlueprintPure, Category = "Echo|Settings") bool IsVSyncEnabled() const { return bVSyncEnabled; }
+	UFUNCTION(BlueprintPure, Category = "Echo|Settings") FText GetResolutionDisplayText() const;
+	UFUNCTION(BlueprintPure, Category = "Echo|Settings") FText GetWindowModeDisplayText() const;
+	UFUNCTION(BlueprintPure, Category = "Echo|Settings") FText GetOverallQualityDisplayText() const;
+	UFUNCTION(BlueprintPure, Category = "Echo|Settings") FText GetFrameRateLimitDisplayText() const;
+
+	UPROPERTY(BlueprintAssignable, Category = "Echo|Settings")
+	FEchoUserSettingsChangedSignature OnUserSettingsChanged;
 
 	UFUNCTION(BlueprintCallable, Category = "Echo|Lobby")
 	void SetLocalPlayerId(const FString& InPlayerId);
@@ -91,6 +139,9 @@ public:
 	void JoinLanRoom(int32 SearchResultIndex);
 
 	UFUNCTION(BlueprintCallable, Category = "Echo|Lobby")
+	void JoinDirectLanRoom(const FString& Address);
+
+	UFUNCTION(BlueprintCallable, Category = "Echo|Lobby")
 	void DestroyRoom();
 
 	const TArray<FEchoLanRoomInfo>& GetCachedRooms() const { return CachedRooms; }
@@ -109,6 +160,23 @@ public:
 	static const FName MaxPlayersSettingKey;
 
 private:
+	void ApplyWwiseVolumes();
+	void PersistUserSettings();
+
+	UPROPERTY(Config)
+	float MasterVolume = 1.0f;
+
+	UPROPERTY(Config)
+	float SfxVolume = 0.8f;
+
+	UPROPERTY(Config)
+	float MusicVolume = 0.65f;
+
+	UPROPERTY(Config)
+	float MouseSensitivity = 1.0f;
+
+	UPROPERTY(Config)
+	bool bVSyncEnabled = false;
 	IOnlineSessionPtr GetSessionInterface() const;
 	void CreateLanRoomInternal();
 	void ClearSessionDelegates();
@@ -133,7 +201,7 @@ private:
 	FString LastRoomName;
 	FString LastLanError;
 	FString PendingRoomName;
-	FString PendingMapKey = TEXT("battle1");
+	FString PendingMapKey = TEXT("level1");
 	int32 PendingMaxPlayers = 4;
 	EEchoMenuFlowState MenuFlowState = EEchoMenuFlowState::Login;
 	bool bPendingCreateAfterDestroy = false;

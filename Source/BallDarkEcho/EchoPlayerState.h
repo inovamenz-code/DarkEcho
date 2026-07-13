@@ -3,6 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "EchoTypes.h"
 #include "GameFramework/PlayerState.h"
 #include "EchoPlayerState.generated.h"
 
@@ -18,6 +19,7 @@ public:
 	AEchoPlayerState();
 
 	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
+	virtual void CopyProperties(APlayerState* PlayerState) override;
 
 	UFUNCTION(BlueprintCallable, Category = "Echo|Score")
 	void AddKill();
@@ -33,6 +35,9 @@ public:
 
 	UFUNCTION(BlueprintCallable, Category = "Echo|Lobby")
 	void SetReady(bool bInReady);
+
+	UFUNCTION(BlueprintCallable, Category = "Echo|Lobby")
+	void SetSelectedSkill(EEchoCharacterSkill InSelectedSkill);
 
 	UFUNCTION(BlueprintPure, Category = "Echo|Score")
 	int32 GetKills() const { return Kills; }
@@ -60,6 +65,9 @@ public:
 
 	UPROPERTY(ReplicatedUsing = OnRep_LobbyState, BlueprintReadOnly, Category = "Echo|Lobby")
 	bool bIsHost = false;
+
+	UPROPERTY(ReplicatedUsing = OnRep_LobbyState, BlueprintReadOnly, Category = "Echo|Lobby")
+	EEchoCharacterSkill SelectedSkill = EEchoCharacterSkill::WideEchoScan;
 
 	UPROPERTY(BlueprintAssignable, Category = "Echo|Score")
 	FEchoScoreChangedSignature OnScoreChanged;

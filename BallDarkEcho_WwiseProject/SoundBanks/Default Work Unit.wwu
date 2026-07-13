@@ -12,9 +12,18 @@
 				</SoundBank>
 				<SoundBank Name="Main_Gameplay" ID="{1DF0FBEC-B2D4-4BB9-83C5-789B49A76246}">
 					<ObjectInclusionList>
+						<ObjectRef Name="RVB_Atrium" ID="{092084A6-ABBD-433A-BBE1-55F863919F4F}" WorkUnitID="{5D940802-4974-4C37-897D-02392F32ACB9}" Origin="Manual" Filter="7"/>
+						<ObjectRef Name="Play_Death" ID="{22A22CA1-8913-40A0-B011-4E812589F770}" WorkUnitID="{FEDA695C-EB34-4EE0-939F-3E2BBE2DE5C2}" Origin="Manual" Filter="7"/>
 						<ObjectRef Name="Play_Move_Sprint" ID="{8BAB1180-C553-4403-8B6F-4AB31A24A390}" WorkUnitID="{FEDA695C-EB34-4EE0-939F-3E2BBE2DE5C2}" Origin="Manual" Filter="7"/>
+						<ObjectRef Name="Play_Decoy_Footstep" ID="{5A1C9A6B-8772-4409-AFBE-65F61054C403}" WorkUnitID="{FEDA695C-EB34-4EE0-939F-3E2BBE2DE5C2}" Origin="Manual" Filter="7"/>
+						<ObjectRef Name="Play_Weapon_Snipe_Fire" ID="{5CB77170-E19A-44CF-9CE9-4CEC659D1072}" WorkUnitID="{FEDA695C-EB34-4EE0-939F-3E2BBE2DE5C2}" Origin="Manual" Filter="7"/>
+						<ObjectRef Name="Play_Projectile_Impact" ID="{4A182FEB-045F-4662-9A9F-25033A141BD1}" WorkUnitID="{FEDA695C-EB34-4EE0-939F-3E2BBE2DE5C2}" Origin="Manual" Filter="7"/>
 						<ObjectRef Name="Play_Move_Normal" ID="{53802EA6-46A2-46CA-B849-CC3A43128545}" WorkUnitID="{FEDA695C-EB34-4EE0-939F-3E2BBE2DE5C2}" Origin="Manual" Filter="7"/>
+						<ObjectRef Name="Play_Weapon_Rapid_Fire" ID="{446A50CF-3CA5-4908-A974-501B604A4E16}" WorkUnitID="{FEDA695C-EB34-4EE0-939F-3E2BBE2DE5C2}" Origin="Manual" Filter="7"/>
+						<ObjectRef Name="Play_Weapon_Standard_Fire" ID="{F3EF955E-10C1-4BE9-B887-12103B61A347}" WorkUnitID="{FEDA695C-EB34-4EE0-939F-3E2BBE2DE5C2}" Origin="Manual" Filter="7"/>
 						<ObjectRef Name="Play_Move_Silent" ID="{78B906BC-63AD-4C96-9555-337485D3C99A}" WorkUnitID="{FEDA695C-EB34-4EE0-939F-3E2BBE2DE5C2}" Origin="Manual" Filter="7"/>
+						<ObjectRef Name="Play_Player_Hit" ID="{0483BCB3-DC05-4CB4-9CEC-81C096998FF2}" WorkUnitID="{FEDA695C-EB34-4EE0-939F-3E2BBE2DE5C2}" Origin="Manual" Filter="7"/>
+						<ObjectRef Name="Play_Scan_Pulse" ID="{0658C768-0E4A-4FBB-A634-96CCAEEB2CA1}" WorkUnitID="{FEDA695C-EB34-4EE0-939F-3E2BBE2DE5C2}" Origin="Manual" Filter="7"/>
 					</ObjectInclusionList>
 					<ObjectExclusionList/>
 					<GameSyncExclusionList/>

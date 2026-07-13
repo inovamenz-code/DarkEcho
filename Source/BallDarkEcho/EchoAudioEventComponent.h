@@ -17,7 +17,11 @@ enum class EEchoSoundEventType : uint8
 	WeaponStandardFire UMETA(DisplayName = "Weapon Standard Fire"),
 	WeaponRapidFire UMETA(DisplayName = "Weapon Rapid Fire"),
 	WeaponSnipeFire UMETA(DisplayName = "Weapon Snipe Fire"),
-	ProjectileImpact UMETA(DisplayName = "Projectile Impact")
+	ProjectileImpact UMETA(DisplayName = "Projectile Impact"),
+	ScanPulse UMETA(DisplayName = "Scan Pulse"),
+	DecoyFootstep UMETA(DisplayName = "Decoy Footstep"),
+	PlayerHit UMETA(DisplayName = "Player Hit"),
+	Death UMETA(DisplayName = "Death")
 };
 
 UCLASS(ClassGroup = (Echo), meta = (BlueprintSpawnableComponent))
@@ -49,8 +53,23 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Echo|Audio")
 	TObjectPtr<UAkAudioEvent> ProjectileImpactEvent = nullptr;
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Echo|Audio")
+	TObjectPtr<UAkAudioEvent> ScanPulseEvent = nullptr;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Echo|Audio")
+	TObjectPtr<UAkAudioEvent> DecoyFootstepEvent = nullptr;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Echo|Audio")
+	TObjectPtr<UAkAudioEvent> PlayerHitEvent = nullptr;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Echo|Audio")
+	TObjectPtr<UAkAudioEvent> DeathEvent = nullptr;
+
 	UFUNCTION(BlueprintCallable, Category = "Echo|Audio")
 	int32 PostEchoSoundEvent(EEchoSoundEventType Type, FVector Location, float Loudness = 1.0f);
+
+	UFUNCTION(BlueprintCallable, Category = "Echo|Audio")
+	void StopEchoSoundEvent(int32 PlayingId, float FadeOutSeconds = 0.1f);
 
 private:
 	UAkAudioEvent* ResolveEvent(EEchoSoundEventType Type) const;

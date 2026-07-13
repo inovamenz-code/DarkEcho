@@ -10,11 +10,21 @@
     "Type": "User",
     "GUID": "{701ECBBD-9C7B-4030-8CDB-749EE5D1C7B9}",
     "Language": "SFX",
-    "Hash": "{D7673B31-4AC2-2B1C-49AE-5402FE5A9260}",
+    "Hash": "{DC7601BD-38B3-59F6-56A7-EACBA9FDE2B8}",
     "ObjectPath": "Init",
     "ShortName": "Init",
     "Path": "Init.bnk",
     "Plugins": {
+     "Custom": [
+      {
+       "Id": "470205082",
+       "Name": "Wwise_RoomVerb_(Custom)",
+       "ObjectPath": "\\Busses\\Default Work Unit\\Main Audio Bus\\Reverb_Reflection\\RVB_Atrium\\[Effect Slot [0]: (RoomVerb)]\\Wwise_RoomVerb_(Custom)",
+       "GUID": "{7F9343B2-2A82-4309-84AA-A03393AE1B5E}",
+       "LibName": "Wwise RoomVerb",
+       "LibId": "7733251"
+      }
+     ],
      "AudioDevices": [
       {
        "Id": "2317455096",
@@ -77,9 +87,24 @@
       "ObjectPath": "\\Busses\\Default Work Unit\\Main Audio Bus\\Gameplay_SFX",
       "GUID": "{49376476-49F9-4654-BA13-2E4917956DD1}"
      }
+    ],
+    "AuxBusses": [
+     {
+      "Id": "2219666210",
+      "Name": "RVB_Atrium",
+      "ObjectPath": "\\Busses\\Default Work Unit\\Main Audio Bus\\Reverb_Reflection\\RVB_Atrium",
+      "GUID": "{092084A6-ABBD-433A-BBE1-55F863919F4F}",
+      "PluginRefs": {
+       "Custom": [
+        {
+         "Id": "470205082"
+        }
+       ]
+      }
+     }
     ]
    }
   ],
-  "FileHash": "{662D5C6E-E4A5-E628-9DE6-236731BF8C6A}"
+  "FileHash": "{D2125D76-B602-FE97-8455-1BCC1C997E15}"
  }
 }

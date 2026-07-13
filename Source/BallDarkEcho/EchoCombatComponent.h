@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "Components/ActorComponent.h"
+#include "EchoAudioEventComponent.h"
 #include "EchoCombatComponent.generated.h"
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FEchoHealthChangedSignature, float, CurrentHealth, float, MaxHealth);
@@ -57,6 +58,12 @@ public:
 	UPROPERTY(BlueprintAssignable, Category = "Echo|Combat")
 	FEchoRespawnCountdownSignature OnRespawnCountdown;
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Echo|Combat|Audio", meta = (ClampMin = "0.0", ClampMax = "1.0"))
+	float PlayerHitAudioLoudness = 0.8f;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Echo|Combat|Audio", meta = (ClampMin = "0.0", ClampMax = "1.0"))
+	float DeathAudioLoudness = 0.75f;
+
 protected:
 	UFUNCTION()
 	void OnRep_CurrentHealth();
@@ -66,4 +73,7 @@ protected:
 
 private:
 	void ApplyDamageOnServer(float DamageAmount, AController* InstigatorController);
+
+	UFUNCTION(NetMulticast, Unreliable)
+	void MulticastPostCombatAudio(EEchoSoundEventType EventType, FVector_NetQuantize Location, float Loudness);
 };

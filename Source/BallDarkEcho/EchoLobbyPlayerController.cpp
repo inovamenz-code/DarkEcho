@@ -61,6 +61,14 @@ void AEchoLobbyPlayerController::ServerSetReady_Implementation(bool bReady)
 	}
 }
 
+void AEchoLobbyPlayerController::ServerSetSelectedSkill_Implementation(EEchoCharacterSkill SelectedSkill)
+{
+	if (AEchoLobbyGameMode* LobbyGameMode = GetWorld() ? GetWorld()->GetAuthGameMode<AEchoLobbyGameMode>() : nullptr)
+	{
+		LobbyGameMode->SetPlayerSelectedSkill(this, SelectedSkill);
+	}
+}
+
 void AEchoLobbyPlayerController::ServerUpdateRoomSettings_Implementation(const FString& SelectedMapKey, int32 MaxPlayers)
 {
 	if (AEchoLobbyGameMode* LobbyGameMode = GetWorld() ? GetWorld()->GetAuthGameMode<AEchoLobbyGameMode>() : nullptr)

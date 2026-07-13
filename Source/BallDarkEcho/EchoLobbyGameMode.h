@@ -3,6 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "EchoTypes.h"
 #include "GameFramework/GameModeBase.h"
 #include "EchoLobbyGameMode.generated.h"
 
@@ -25,6 +26,7 @@ public:
 
 	void SetPlayerId(AEchoLobbyPlayerController* PlayerController, const FString& PlayerId);
 	void SetPlayerReady(AEchoLobbyPlayerController* PlayerController, bool bReady);
+	void SetPlayerSelectedSkill(AEchoLobbyPlayerController* PlayerController, EEchoCharacterSkill SelectedSkill);
 	void UpdateRoomSettings(AEchoLobbyPlayerController* PlayerController, const FString& SelectedMapKey, int32 MaxPlayers);
 	void StartRoom(AEchoLobbyPlayerController* PlayerController);
 
@@ -36,6 +38,6 @@ private:
 	FString BuildTravelUrl(const FString& MapKey) const;
 
 	FString InitialRoomName = TEXT("LAN Room");
-	FString InitialSelectedMapKey = TEXT("battle1");
+	FString InitialSelectedMapKey = TEXT("level1");
 	int32 InitialMaxPlayers = 4;
 };

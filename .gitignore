@@ -46,9 +46,23 @@ UpgradeLog.htm
 
 # Local Codex workspace data
 .codex/
+.codex_tmp/
+.agents/
+
+# Local scratch and generated helper output
+tmp/
+**/__pycache__/
+
+# Raw packaged output is kept locally. The curated archive lives in
+# 2_Final_Build and is tracked with Git LFS.
+Builds/
+
+# Generated banks for non-target platforms
+BallDarkEcho_WwiseProject/GeneratedSoundBanks/Mac/
 
 # Unreal auto-backup assets
 Content/**/*_Backup_AutoBefore*
+Content/**/*_Backup_Before*
 
 # Local Wwise plugin installs are too large for normal Git history.
 # Install Wwise/Unreal integration locally instead of committing the SDK.

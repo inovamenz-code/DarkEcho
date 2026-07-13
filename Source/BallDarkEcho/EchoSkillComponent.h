@@ -103,6 +103,15 @@ private:
 	UFUNCTION(NetMulticast, Unreliable)
 	void MulticastSpawnScanVisualWave(FVector_NetQuantize Origin);
 
+	// The server decides which targets are revealed; only the player who spent
+	// the skill receives the highlight.  The sound and travelling wave remain
+	// multicast, so triggering a scan still exposes the scanner to everyone.
+	UFUNCTION(Client, Reliable)
+	void ClientRevealWideScanTargets(const TArray<AActor*>& Targets, EEchoFrequency Frequency, float Duration);
+
+	UFUNCTION(NetMulticast, Unreliable)
+	void MulticastPlayScanAudio(FVector_NetQuantize Origin);
+
 	FTimerHandle InputBindRetryTimerHandle;
 	FTimerHandle StealthTimerHandle;
 	UPROPERTY()

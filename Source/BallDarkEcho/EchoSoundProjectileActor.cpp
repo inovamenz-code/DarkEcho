@@ -26,8 +26,9 @@ AEchoSoundProjectileActor::AEchoSoundProjectileActor()
 	CollisionSphere->SetCollisionResponseToAllChannels(ECR_Ignore);
 	CollisionSphere->SetCollisionResponseToChannel(ECC_Pawn, ECR_Overlap);
 	CollisionSphere->SetCollisionResponseToChannel(ECC_WorldDynamic, ECR_Overlap);
-	CollisionSphere->SetCollisionResponseToChannel(ECC_WorldStatic, ECR_Overlap);
+	CollisionSphere->SetCollisionResponseToChannel(ECC_WorldStatic, ECR_Block);
 	CollisionSphere->SetGenerateOverlapEvents(true);
+	CollisionSphere->SetNotifyRigidBodyCollision(true);
 
 	VisualMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("VisualMesh"));
 	VisualMesh->SetupAttachment(CollisionSphere);
@@ -60,6 +61,7 @@ void AEchoSoundProjectileActor::BeginPlay()
 	Super::BeginPlay();
 
 	CollisionSphere->OnComponentBeginOverlap.AddDynamic(this, &AEchoSoundProjectileActor::HandleOverlap);
+	CollisionSphere->OnComponentHit.AddDynamic(this, &AEchoSoundProjectileActor::HandleHit);
 }
 
 void AEchoSoundProjectileActor::Tick(float DeltaSeconds)
@@ -135,13 +137,27 @@ void AEchoSoundProjectileActor::HandleOverlap(
 	bool bFromSweep,
 	const FHitResult& SweepResult)
 {
-	if (!HasAuthority() || !OtherActor || OtherActor == this || OtherActor == SourceActor)
+	ProcessImpact(OtherActor, SweepResult);
+}
+
+void AEchoSoundProjectileActor::HandleHit(
+	UPrimitiveComponent* HitComponent,
+	AActor* OtherActor,
+	UPrimitiveComponent* OtherComponent,
+	FVector NormalImpulse,
+	const FHitResult& Hit)
+{
+	ProcessImpact(OtherActor, Hit);
+}
+
+void AEchoSoundProjectileActor::ProcessImpact(AActor* OtherActor, const FHitResult& HitResult)
+{
+	if (bTerminalImpactResolved || !HasAuthority() || !OtherActor || OtherActor == this || OtherActor == SourceActor)
 	{
 		return;
 	}
 
-	const FVector SweepImpactPoint(SweepResult.ImpactPoint);
-	const FVector ImpactLocation = SweepImpactPoint.IsNearlyZero() ? GetActorLocation() : SweepImpactPoint;
+	const FVector ImpactLocation = ResolveImpactLocation(HitResult);
 
 	if (UEchoCombatComponent* CombatComponent = OtherActor->FindComponentByClass<UEchoCombatComponent>())
 	{
@@ -152,22 +168,26 @@ void AEchoSoundProjectileActor::HandleOverlap(
 		}
 
 		CombatComponent->ReceiveEchoDamage(CalculateDamageAtCurrentDistance(), CachedInstigatorController);
+		bTerminalImpactResolved = true;
 		MulticastTriggerImpactWave(ImpactLocation);
 		Destroy();
 		return;
 	}
 
-	if (!OtherActor->IsA<APawn>())
+	if (OtherActor->IsA<APawn>())
 	{
-		if (bResonanceBeamProjectile && TryReflectFromHit(SweepResult))
-		{
-			MulticastTriggerImpactWave(ImpactLocation);
-			return;
-		}
-
-		MulticastTriggerImpactWave(ImpactLocation);
-		Destroy();
+		return;
 	}
+
+	if (bResonanceBeamProjectile && TryReflectFromHit(HitResult))
+	{
+		MulticastTriggerImpactWave(ImpactLocation);
+		return;
+	}
+
+	bTerminalImpactResolved = true;
+	MulticastTriggerImpactWave(ImpactLocation);
+	Destroy();
 }
 
 float AEchoSoundProjectileActor::CalculateDamageAtCurrentDistance() const
@@ -274,6 +294,21 @@ bool AEchoSoundProjectileActor::TryReflectFromHit(const FHitResult& SweepResult)
 	ProjectileMovement->Velocity = TravelDirection * Tuning.ProjectileSpeed;
 	SetActorRotation(TravelDirection.Rotation());
 	return true;
+}
+
+FVector AEchoSoundProjectileActor::ResolveImpactLocation(const FHitResult& HitResult) const
+{
+	if (!HitResult.ImpactPoint.IsNearlyZero())
+	{
+		return HitResult.ImpactPoint;
+	}
+
+	if (!HitResult.Location.IsNearlyZero())
+	{
+		return HitResult.Location;
+	}
+
+	return GetActorLocation();
 }
 
 void AEchoSoundProjectileActor::TriggerLocalImpactWave(FVector Origin)

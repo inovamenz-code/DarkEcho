@@ -27,11 +27,14 @@
 				</Sound>
 				<Sound Name="SFX_Move_BallRoll" ID="{10C00A1F-4DEA-4F40-A5C3-50A796ADA5CB}" ShortID="519607489">
 					<ReferenceList>
+						<Reference Name="Attenuation">
+							<ObjectRef Name="ATT_Echo_Mid" ID="{4FEF7073-5FBB-403B-8800-01E9CBD43B77}" WorkUnitID="{D59050DB-F24B-4D92-A5E0-D152AE264E01}"/>
+						</Reference>
 						<Reference Name="Conversion">
 							<ObjectRef Name="Default Conversion Settings" ID="{6D1B890C-9826-4384-BF07-C15223E9FB56}" WorkUnitID="{FDA9942F-05F1-47AA-AAB8-E16C29156B57}"/>
 						</Reference>
 						<Reference Name="OutputBus">
-							<ObjectRef Name="Main Audio Bus" ID="{1514A4D8-1DA6-412A-A17E-75CA0C2149F3}" WorkUnitID="{5D940802-4974-4C37-897D-02392F32ACB9}"/>
+							<ObjectRef Name="Gameplay_SFX" ID="{49376476-49F9-4654-BA13-2E4917956DD1}" WorkUnitID="{5D940802-4974-4C37-897D-02392F32ACB9}"/>
 						</Reference>
 					</ReferenceList>
 					<ChildrenList>
@@ -64,18 +67,35 @@
 								<MediaID ID="838057282"/>
 							</MediaIDList>
 						</AudioFileSource>
+						<AudioFileSource Name="projectile_impact_placeholder_01" ID="{92450155-AF45-4D88-96BA-6BA681707DD4}">
+							<Language>SFX</Language>
+							<AudioFile>projectile_impact_placeholder_01.wav</AudioFile>
+							<MediaIDList>
+								<MediaID ID="851907246"/>
+							</MediaIDList>
+						</AudioFileSource>
 					</ChildrenList>
 					<ActiveSourceList>
-						<ActiveSource Name="scficShoot" ID="{E6B7B9CD-9607-4DF1-ABBD-CD012A05A335}" Platform="Linked"/>
+						<ActiveSource Name="projectile_impact_placeholder_01" ID="{92450155-AF45-4D88-96BA-6BA681707DD4}" Platform="Linked"/>
 					</ActiveSourceList>
 				</Sound>
-				<Sound Name="Snipe" ID="{14655564-CC41-4E2A-86A8-353A3C28CE37}" ShortID="1000117364">
+				<Sound Name="CommonShoot" ID="{14655564-CC41-4E2A-86A8-353A3C28CE37}" ShortID="1000117364">
+					<PropertyList>
+						<Property Name="Volume" Type="Real64">
+							<ValueList>
+								<Value>-6</Value>
+							</ValueList>
+						</Property>
+					</PropertyList>
 					<ReferenceList>
+						<Reference Name="Attenuation">
+							<ObjectRef Name="ATT_Echo_Weapon" ID="{8D45798B-A63F-48DB-A978-49609EDF1278}" WorkUnitID="{D59050DB-F24B-4D92-A5E0-D152AE264E01}"/>
+						</Reference>
 						<Reference Name="Conversion">
 							<ObjectRef Name="Default Conversion Settings" ID="{6D1B890C-9826-4384-BF07-C15223E9FB56}" WorkUnitID="{FDA9942F-05F1-47AA-AAB8-E16C29156B57}"/>
 						</Reference>
 						<Reference Name="OutputBus">
-							<ObjectRef Name="Main Audio Bus" ID="{1514A4D8-1DA6-412A-A17E-75CA0C2149F3}" WorkUnitID="{5D940802-4974-4C37-897D-02392F32ACB9}"/>
+							<ObjectRef Name="Gameplay_SFX" ID="{49376476-49F9-4654-BA13-2E4917956DD1}" WorkUnitID="{5D940802-4974-4C37-897D-02392F32ACB9}"/>
 						</Reference>
 					</ReferenceList>
 					<ChildrenList>
@@ -96,6 +116,368 @@
 					</ChildrenList>
 					<ActiveSourceList>
 						<ActiveSource Name="scficShoot" ID="{F4C66C46-9FCD-4D60-9210-22A91EB773A0}" Platform="Linked"/>
+					</ActiveSourceList>
+				</Sound>
+				<Sound Name="projectile_impact_placeholder_01" ID="{FC84392D-B8AE-48CB-9DD7-42FB7FA762B9}" ShortID="738501614">
+					<PropertyList>
+						<Property Name="3DSpatialization" Type="int16" Value="1"/>
+						<Property Name="ListenerRelativeRouting" Type="bool" Value="False"/>
+					</PropertyList>
+					<ReferenceList>
+						<Reference Name="Attenuation">
+							<ObjectRef Name="ATT_Echo_Impact" ID="{78139ACF-9DBF-4CBC-8BC3-44445815F6BB}" WorkUnitID="{D59050DB-F24B-4D92-A5E0-D152AE264E01}"/>
+						</Reference>
+						<Reference Name="Conversion">
+							<ObjectRef Name="Default Conversion Settings" ID="{6D1B890C-9826-4384-BF07-C15223E9FB56}" WorkUnitID="{FDA9942F-05F1-47AA-AAB8-E16C29156B57}"/>
+						</Reference>
+						<Reference Name="OutputBus">
+							<ObjectRef Name="Gameplay_SFX" ID="{49376476-49F9-4654-BA13-2E4917956DD1}" WorkUnitID="{5D940802-4974-4C37-897D-02392F32ACB9}"/>
+						</Reference>
+					</ReferenceList>
+					<ChildrenList>
+						<AudioFileSource Name="projectile_impact_placeholder_01" ID="{DD094931-B15A-4955-90A5-E5367EBD09A9}">
+							<Language>SFX</Language>
+							<AudioFile>projectile_impact_placeholder_01.wav</AudioFile>
+							<MediaIDList>
+								<MediaID ID="851907246"/>
+							</MediaIDList>
+						</AudioFileSource>
+					</ChildrenList>
+					<ActiveSourceList>
+						<ActiveSource Name="projectile_impact_placeholder_01" ID="{DD094931-B15A-4955-90A5-E5367EBD09A9}" Platform="Linked"/>
+					</ActiveSourceList>
+				</Sound>
+				<Sound Name="Scan_Default" ID="{ACD571BD-EC96-44DD-AB8D-EF5AEAF285E5}" ShortID="834345940">
+					<PropertyList>
+						<Property Name="Volume" Type="Real64">
+							<ValueList>
+								<Value>-2</Value>
+							</ValueList>
+						</Property>
+					</PropertyList>
+					<ReferenceList>
+						<Reference Name="Attenuation">
+							<ObjectRef Name="ATT_Echo_Mid" ID="{4FEF7073-5FBB-403B-8800-01E9CBD43B77}" WorkUnitID="{D59050DB-F24B-4D92-A5E0-D152AE264E01}"/>
+						</Reference>
+						<Reference Name="Conversion">
+							<ObjectRef Name="Default Conversion Settings" ID="{6D1B890C-9826-4384-BF07-C15223E9FB56}" WorkUnitID="{FDA9942F-05F1-47AA-AAB8-E16C29156B57}"/>
+						</Reference>
+						<Reference Name="OutputBus">
+							<ObjectRef Name="Gameplay_SFX" ID="{49376476-49F9-4654-BA13-2E4917956DD1}" WorkUnitID="{5D940802-4974-4C37-897D-02392F32ACB9}"/>
+						</Reference>
+					</ReferenceList>
+					<ChildrenList>
+						<AudioFileSource Name="DSGNBass_Bass Drop &amp; Downer Fast 16_344 Audio_Bass Drops &amp; Downers" ID="{FE4DB6FE-321F-4A37-8784-267D3FEA7D90}">
+							<PropertyList>
+								<Property Name="FadeInDuration" Type="Real64" Value="0.42866"/>
+								<Property Name="FadeOutDuration" Type="Real64" Value="1.13628"/>
+								<Property Name="OverrideWavLoop" Type="bool" Value="True"/>
+							</PropertyList>
+							<Language>SFX</Language>
+							<AudioFile>DSGNBass_Bass Drop &amp; Downer Fast 16_344 Audio_Bass Drops &amp; Downers.wav</AudioFile>
+							<MediaIDList>
+								<MediaID ID="123335188"/>
+							</MediaIDList>
+						</AudioFileSource>
+					</ChildrenList>
+					<ActiveSourceList>
+						<ActiveSource Name="DSGNBass_Bass Drop &amp; Downer Fast 16_344 Audio_Bass Drops &amp; Downers" ID="{FE4DB6FE-321F-4A37-8784-267D3FEA7D90}" Platform="Linked"/>
+					</ActiveSourceList>
+				</Sound>
+				<Sound Name="DSGNBass_Bass Drop &amp; Downer Medium 04_344 Audio_Bass Drops &amp; Downers" ID="{DC0FA81D-B836-4FF7-AE61-0D89284ADA63}" ShortID="123838568">
+					<ReferenceList>
+						<Reference Name="Conversion">
+							<ObjectRef Name="Default Conversion Settings" ID="{6D1B890C-9826-4384-BF07-C15223E9FB56}" WorkUnitID="{FDA9942F-05F1-47AA-AAB8-E16C29156B57}"/>
+						</Reference>
+						<Reference Name="OutputBus">
+							<ObjectRef Name="Main Audio Bus" ID="{1514A4D8-1DA6-412A-A17E-75CA0C2149F3}" WorkUnitID="{5D940802-4974-4C37-897D-02392F32ACB9}"/>
+						</Reference>
+					</ReferenceList>
+					<ChildrenList>
+						<AudioFileSource Name="DSGNBass_Bass Drop &amp; Downer Medium 04_344 Audio_Bass Drops &amp; Downers" ID="{078E6EE9-F976-4623-9CE3-91B06EC223A1}">
+							<Language>SFX</Language>
+							<AudioFile>DSGNBass_Bass Drop &amp; Downer Medium 04_344 Audio_Bass Drops &amp; Downers.wav</AudioFile>
+							<MediaIDList>
+								<MediaID ID="276849728"/>
+							</MediaIDList>
+						</AudioFileSource>
+					</ChildrenList>
+					<ActiveSourceList>
+						<ActiveSource Name="DSGNBass_Bass Drop &amp; Downer Medium 04_344 Audio_Bass Drops &amp; Downers" ID="{078E6EE9-F976-4623-9CE3-91B06EC223A1}" Platform="Linked"/>
+					</ActiveSourceList>
+				</Sound>
+				<Sound Name="DSGNBass_Bass Drop &amp; Downer Slow 10_344 Audio_Bass Drops &amp; Downers" ID="{799F8C49-1A96-481B-9813-FCD0AF1574BE}" ShortID="330315660">
+					<ReferenceList>
+						<Reference Name="Conversion">
+							<ObjectRef Name="Default Conversion Settings" ID="{6D1B890C-9826-4384-BF07-C15223E9FB56}" WorkUnitID="{FDA9942F-05F1-47AA-AAB8-E16C29156B57}"/>
+						</Reference>
+						<Reference Name="OutputBus">
+							<ObjectRef Name="Main Audio Bus" ID="{1514A4D8-1DA6-412A-A17E-75CA0C2149F3}" WorkUnitID="{5D940802-4974-4C37-897D-02392F32ACB9}"/>
+						</Reference>
+					</ReferenceList>
+					<ChildrenList>
+						<AudioFileSource Name="DSGNBass_Bass Drop &amp; Downer Slow 10_344 Audio_Bass Drops &amp; Downers" ID="{C2DA6E55-485B-4D2D-8B40-D0A98FB916C5}">
+							<Language>SFX</Language>
+							<AudioFile>DSGNBass_Bass Drop &amp; Downer Slow 10_344 Audio_Bass Drops &amp; Downers.wav</AudioFile>
+							<MediaIDList>
+								<MediaID ID="752211149"/>
+							</MediaIDList>
+						</AudioFileSource>
+					</ChildrenList>
+					<ActiveSourceList>
+						<ActiveSource Name="DSGNBass_Bass Drop &amp; Downer Slow 10_344 Audio_Bass Drops &amp; Downers" ID="{C2DA6E55-485B-4D2D-8B40-D0A98FB916C5}" Platform="Linked"/>
+					</ActiveSourceList>
+				</Sound>
+				<Sound Name="Play_Decoy_Footstep" ID="{E44C3477-F565-41AD-89B3-04E3846E6DB4}" ShortID="680464079">
+					<PropertyList>
+						<Property Name="BelowThresholdBehavior" Type="int16" Value="3"/>
+						<Property Name="Lowpass" Type="int16">
+							<ValueList>
+								<Value>20</Value>
+							</ValueList>
+						</Property>
+						<Property Name="Pitch" Type="int32">
+							<ValueList>
+								<Value>-100</Value>
+							</ValueList>
+						</Property>
+						<Property Name="Volume" Type="Real64">
+							<ValueList>
+								<Value>-4</Value>
+							</ValueList>
+						</Property>
+					</PropertyList>
+					<ReferenceList>
+						<Reference Name="Attenuation">
+							<ObjectRef Name="ATT_Echo_Decoy" ID="{B96DD849-2FA6-4296-814D-EEE17659DA6F}" WorkUnitID="{D59050DB-F24B-4D92-A5E0-D152AE264E01}"/>
+						</Reference>
+						<Reference Name="Conversion">
+							<ObjectRef Name="Default Conversion Settings" ID="{6D1B890C-9826-4384-BF07-C15223E9FB56}" WorkUnitID="{FDA9942F-05F1-47AA-AAB8-E16C29156B57}"/>
+						</Reference>
+						<Reference Name="OutputBus">
+							<ObjectRef Name="Gameplay_SFX" ID="{49376476-49F9-4654-BA13-2E4917956DD1}" WorkUnitID="{5D940802-4974-4C37-897D-02392F32ACB9}"/>
+						</Reference>
+					</ReferenceList>
+					<ChildrenList>
+						<AudioFileSource Name="8wasr-3a419" ID="{55D3CD71-3084-417C-85E2-0A72D40C36DC}">
+							<Language>SFX</Language>
+							<AudioFile>8wasr-3a419.wav</AudioFile>
+							<MediaIDList>
+								<MediaID ID="825503811"/>
+							</MediaIDList>
+						</AudioFileSource>
+					</ChildrenList>
+					<ActiveSourceList>
+						<ActiveSource Name="8wasr-3a419" ID="{55D3CD71-3084-417C-85E2-0A72D40C36DC}" Platform="Linked"/>
+					</ActiveSourceList>
+				</Sound>
+				<Sound Name="PlayerHits" ID="{22C4B96C-9F25-4433-B89F-DC30FE546244}" ShortID="267303869">
+					<ReferenceList>
+						<Reference Name="Conversion">
+							<ObjectRef Name="Default Conversion Settings" ID="{6D1B890C-9826-4384-BF07-C15223E9FB56}" WorkUnitID="{FDA9942F-05F1-47AA-AAB8-E16C29156B57}"/>
+						</Reference>
+						<Reference Name="OutputBus">
+							<ObjectRef Name="Main Audio Bus" ID="{1514A4D8-1DA6-412A-A17E-75CA0C2149F3}" WorkUnitID="{5D940802-4974-4C37-897D-02392F32ACB9}"/>
+						</Reference>
+					</ReferenceList>
+					<ChildrenList>
+						<AudioFileSource Name="DSGNBass_Bass Drop &amp; Downer Fast 16_344 Audio_Bass Drops &amp; Downers" ID="{2E630BAC-CD97-4E26-B35B-FF9ADBF7174A}">
+							<PropertyList>
+								<Property Name="FadeInDuration" Type="Real64" Value="0.42866"/>
+								<Property Name="FadeOutDuration" Type="Real64" Value="1.13628"/>
+								<Property Name="OverrideWavLoop" Type="bool" Value="True"/>
+							</PropertyList>
+							<Language>SFX</Language>
+							<AudioFile>DSGNBass_Bass Drop &amp; Downer Fast 16_344 Audio_Bass Drops &amp; Downers.wav</AudioFile>
+							<MediaIDList>
+								<MediaID ID="123335188"/>
+							</MediaIDList>
+						</AudioFileSource>
+					</ChildrenList>
+					<ActiveSourceList>
+						<ActiveSource Name="DSGNBass_Bass Drop &amp; Downer Fast 16_344 Audio_Bass Drops &amp; Downers" ID="{2E630BAC-CD97-4E26-B35B-FF9ADBF7174A}" Platform="Linked"/>
+					</ActiveSourceList>
+				</Sound>
+				<Sound Name="PlayerDeath" ID="{278B92FB-2034-4822-B0C5-091A46B545A9}" ShortID="97553453">
+					<ReferenceList>
+						<Reference Name="Conversion">
+							<ObjectRef Name="Default Conversion Settings" ID="{6D1B890C-9826-4384-BF07-C15223E9FB56}" WorkUnitID="{FDA9942F-05F1-47AA-AAB8-E16C29156B57}"/>
+						</Reference>
+						<Reference Name="OutputBus">
+							<ObjectRef Name="Main Audio Bus" ID="{1514A4D8-1DA6-412A-A17E-75CA0C2149F3}" WorkUnitID="{5D940802-4974-4C37-897D-02392F32ACB9}"/>
+						</Reference>
+					</ReferenceList>
+					<ChildrenList>
+						<AudioFileSource Name="DSGNBass_Bass Drop &amp; Downer Fast 16_344 Audio_Bass Drops &amp; Downers" ID="{FEF65CCF-71AB-4FEF-BD2E-0F79D28943AC}">
+							<PropertyList>
+								<Property Name="FadeInDuration" Type="Real64" Value="0.42866"/>
+								<Property Name="FadeOutDuration" Type="Real64" Value="1.13628"/>
+								<Property Name="OverrideWavLoop" Type="bool" Value="True"/>
+							</PropertyList>
+							<Language>SFX</Language>
+							<AudioFile>DSGNBass_Bass Drop &amp; Downer Fast 16_344 Audio_Bass Drops &amp; Downers.wav</AudioFile>
+							<MediaIDList>
+								<MediaID ID="123335188"/>
+							</MediaIDList>
+						</AudioFileSource>
+					</ChildrenList>
+					<ActiveSourceList>
+						<ActiveSource Name="DSGNBass_Bass Drop &amp; Downer Fast 16_344 Audio_Bass Drops &amp; Downers" ID="{FEF65CCF-71AB-4FEF-BD2E-0F79D28943AC}" Platform="Linked"/>
+					</ActiveSourceList>
+				</Sound>
+				<Sound Name="SFX_Move_BallRollSilent" ID="{D93EFD2E-33D7-4FF7-9FA4-E1BBC8D41E63}" ShortID="671766706">
+					<PropertyList>
+						<Property Name="Lowpass" Type="int16">
+							<ValueList>
+								<Value>30</Value>
+							</ValueList>
+						</Property>
+						<Property Name="Pitch" Type="int32">
+							<ValueList>
+								<Value>-120</Value>
+							</ValueList>
+						</Property>
+						<Property Name="Volume" Type="Real64">
+							<ValueList>
+								<Value>-8</Value>
+							</ValueList>
+						</Property>
+					</PropertyList>
+					<ReferenceList>
+						<Reference Name="Attenuation">
+							<ObjectRef Name="ATT_Echo_Close" ID="{98A7FE78-6A9A-4E4D-9C22-7A40ED88CA7C}" WorkUnitID="{D59050DB-F24B-4D92-A5E0-D152AE264E01}"/>
+						</Reference>
+						<Reference Name="Conversion">
+							<ObjectRef Name="Default Conversion Settings" ID="{6D1B890C-9826-4384-BF07-C15223E9FB56}" WorkUnitID="{FDA9942F-05F1-47AA-AAB8-E16C29156B57}"/>
+						</Reference>
+						<Reference Name="OutputBus">
+							<ObjectRef Name="Gameplay_SFX" ID="{49376476-49F9-4654-BA13-2E4917956DD1}" WorkUnitID="{5D940802-4974-4C37-897D-02392F32ACB9}"/>
+						</Reference>
+					</ReferenceList>
+					<ChildrenList>
+						<AudioFileSource Name="Move_Silent_Wood" ID="{7EB28CEE-6902-4C03-ACED-20806CCFEE99}">
+							<Language>SFX</Language>
+							<AudioFile>Move_Silent_Wood.wav</AudioFile>
+							<MediaIDList>
+								<MediaID ID="638952218"/>
+							</MediaIDList>
+						</AudioFileSource>
+					</ChildrenList>
+					<ActiveSourceList>
+						<ActiveSource Name="Move_Silent_Wood" ID="{7EB28CEE-6902-4C03-ACED-20806CCFEE99}" Platform="Linked"/>
+					</ActiveSourceList>
+				</Sound>
+				<Sound Name="Snipesci-fi-weapon-laser-shot-04-316416" ID="{721E5DA3-CD09-4925-A567-7FE029D03691}" ShortID="296734988">
+					<PropertyList>
+						<Property Name="Volume" Type="Real64">
+							<ValueList>
+								<Value>2</Value>
+							</ValueList>
+						</Property>
+					</PropertyList>
+					<ReferenceList>
+						<Reference Name="Attenuation">
+							<ObjectRef Name="ATT_Echo_Far" ID="{A489CB5E-5B08-4CE6-A7C1-CEAEF19828F6}" WorkUnitID="{D59050DB-F24B-4D92-A5E0-D152AE264E01}"/>
+						</Reference>
+						<Reference Name="Conversion">
+							<ObjectRef Name="Default Conversion Settings" ID="{6D1B890C-9826-4384-BF07-C15223E9FB56}" WorkUnitID="{FDA9942F-05F1-47AA-AAB8-E16C29156B57}"/>
+						</Reference>
+						<Reference Name="OutputBus">
+							<ObjectRef Name="Gameplay_SFX" ID="{49376476-49F9-4654-BA13-2E4917956DD1}" WorkUnitID="{5D940802-4974-4C37-897D-02392F32ACB9}"/>
+						</Reference>
+					</ReferenceList>
+					<ChildrenList>
+						<AudioFileSource Name="Snipesci-fi-weapon-laser-shot-04-316416" ID="{31BB8CAA-0DEE-42B9-A7A1-6AE32699CAAB}">
+							<Language>SFX</Language>
+							<AudioFile>Snipesci-fi-weapon-laser-shot-04-316416.wav</AudioFile>
+							<MediaIDList>
+								<MediaID ID="687552056"/>
+							</MediaIDList>
+						</AudioFileSource>
+					</ChildrenList>
+					<ActiveSourceList>
+						<ActiveSource Name="Snipesci-fi-weapon-laser-shot-04-316416" ID="{31BB8CAA-0DEE-42B9-A7A1-6AE32699CAAB}" Platform="Linked"/>
+					</ActiveSourceList>
+				</Sound>
+				<Sound Name="SFX_Move_BallRoll_Sprint" ID="{A98AA22A-F2D0-4977-9B4B-AE6CBFDC222C}" ShortID="133459218">
+					<PropertyList>
+						<Property Name="Pitch" Type="int32">
+							<ValueList>
+								<Value>316</Value>
+							</ValueList>
+						</Property>
+						<Property Name="Volume" Type="Real64">
+							<ValueList>
+								<Value>3</Value>
+							</ValueList>
+						</Property>
+					</PropertyList>
+					<ReferenceList>
+						<Reference Name="Attenuation">
+							<ObjectRef Name="ATT_Echo_Far" ID="{A489CB5E-5B08-4CE6-A7C1-CEAEF19828F6}" WorkUnitID="{D59050DB-F24B-4D92-A5E0-D152AE264E01}"/>
+						</Reference>
+						<Reference Name="Conversion">
+							<ObjectRef Name="Default Conversion Settings" ID="{6D1B890C-9826-4384-BF07-C15223E9FB56}" WorkUnitID="{FDA9942F-05F1-47AA-AAB8-E16C29156B57}"/>
+						</Reference>
+						<Reference Name="OutputBus">
+							<ObjectRef Name="Gameplay_SFX" ID="{49376476-49F9-4654-BA13-2E4917956DD1}" WorkUnitID="{5D940802-4974-4C37-897D-02392F32ACB9}"/>
+						</Reference>
+					</ReferenceList>
+					<ChildrenList>
+						<AudioFileSource Name="move_normal_ball_roll_loop_01" ID="{773036B0-0C6B-47A5-A37C-EAC7151F685F}">
+							<Language>SFX</Language>
+							<AudioFile>move_normal_ball_roll_loop_01.wav</AudioFile>
+							<MediaIDList>
+								<MediaID ID="1045975195"/>
+							</MediaIDList>
+						</AudioFileSource>
+					</ChildrenList>
+					<ActiveSourceList>
+						<ActiveSource Name="move_normal_ball_roll_loop_01" ID="{773036B0-0C6B-47A5-A37C-EAC7151F685F}" Platform="Linked"/>
+					</ActiveSourceList>
+				</Sound>
+				<Sound Name="RapidShoot" ID="{07F82A96-8F57-4544-9974-19C08F22DDC2}" ShortID="389889531">
+					<PropertyList>
+						<Property Name="Pitch" Type="int32">
+							<ValueList>
+								<Value>150</Value>
+							</ValueList>
+						</Property>
+						<Property Name="Volume" Type="Real64">
+							<ValueList>
+								<Value>-9</Value>
+							</ValueList>
+						</Property>
+					</PropertyList>
+					<ReferenceList>
+						<Reference Name="Attenuation">
+							<ObjectRef Name="ATT_Echo_Weapon" ID="{8D45798B-A63F-48DB-A978-49609EDF1278}" WorkUnitID="{D59050DB-F24B-4D92-A5E0-D152AE264E01}"/>
+						</Reference>
+						<Reference Name="Conversion">
+							<ObjectRef Name="Default Conversion Settings" ID="{6D1B890C-9826-4384-BF07-C15223E9FB56}" WorkUnitID="{FDA9942F-05F1-47AA-AAB8-E16C29156B57}"/>
+						</Reference>
+						<Reference Name="OutputBus">
+							<ObjectRef Name="Gameplay_SFX" ID="{49376476-49F9-4654-BA13-2E4917956DD1}" WorkUnitID="{5D940802-4974-4C37-897D-02392F32ACB9}"/>
+						</Reference>
+					</ReferenceList>
+					<ChildrenList>
+						<AudioFileSource Name="scficShoot" ID="{65C06E82-461D-4A7F-9C81-4CAFE0BB33A8}">
+							<PropertyList>
+								<Property Name="FadeInDuration" Type="Real64" Value="0.1024"/>
+								<Property Name="FadeOutDuration" Type="Real64" Value="0.26996"/>
+								<Property Name="OverrideWavLoop" Type="bool" Value="True"/>
+								<Property Name="TrimBegin" Type="Real64" Value="17.20753"/>
+								<Property Name="TrimEnd" Type="Real64" Value="18.23618"/>
+							</PropertyList>
+							<Language>SFX</Language>
+							<AudioFile>scficShoot.wav</AudioFile>
+							<MediaIDList>
+								<MediaID ID="237410838"/>
+							</MediaIDList>
+						</AudioFileSource>
+					</ChildrenList>
+					<ActiveSourceList>
+						<ActiveSource Name="scficShoot" ID="{65C06E82-461D-4A7F-9C81-4CAFE0BB33A8}" Platform="Linked"/>
 					</ActiveSourceList>
 				</Sound>
 			</ChildrenList>
